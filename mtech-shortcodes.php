@@ -60,7 +60,7 @@ class MTECH_Shortcodes {
             'MTECH Shortcodes',
             'manage_options',
             'mtech-shortcodes',
-            'display_admin_dashboard' // from dashboard.php
+            'display_shortcodes_admin_dashboard' // from dashboard.php
         );
     }
 

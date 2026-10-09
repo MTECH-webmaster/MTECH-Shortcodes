@@ -44,7 +44,7 @@ function mtech_shortcodes_enqueue_dashboard_script($hook) {
 }
 add_action('admin_enqueue_scripts', 'mtech_shortcodes_enqueue_dashboard_script');
 
-function display_admin_dashboard() {
+function display_shortcodes_admin_dashboard() {
     if (!current_user_can('manage_options')) {
         return;
     }
