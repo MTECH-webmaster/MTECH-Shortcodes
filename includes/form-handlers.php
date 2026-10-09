@@ -486,49 +486,6 @@ function mtech_shortcodes_remove_program_handler() {
 }
 add_action('admin_post_mtech_shortcodes_remove_program', 'mtech_shortcodes_remove_program_handler');
 
-function mtech_shortcodes_save_api_credentials_handler() {
-    if (!current_user_can('manage_options')) {
-        wp_die('Unauthorized', 403);
-    }
-
-    if (!isset($_POST['mtech_shortcodes_api_nonce']) ||
-        !wp_verify_nonce($_POST['mtech_shortcodes_api_nonce'], 'mtech_shortcodes_save_api_credentials')) {
-        wp_die('Invalid request', 400);
-    }
-
-    $username = isset($_POST['username']) ? sanitize_text_field($_POST['username']) : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
-
-    if ($username === '') {
-        wp_die('Username is required', 400);
-    }
-
-    update_option('mtech_shortcodes_username', $username, false);
-
-    // Only overwrite the stored password if the user actually typed a new one —
-    // an empty submission means "keep the existing password unchanged"
-    if ($password !== '') {
-        $encrypted_password = mtech_shortcodes_encrypt_data($password);
-
-        if (is_wp_error($encrypted_password)) {
-            mtech_shortcodes_log($encrypted_password->get_error_message());
-            wp_die('Failed to encrypt password. Check the error log for details.', 500);
-        }
-
-        update_option('mtech_shortcodes_encrypted_password', $encrypted_password, false);
-    }
-
-    $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
-    $redirect = add_query_arg(
-        'mtech_api_saved', '1',
-        remove_query_arg(array('mtech_saved', 'mtech_deleted', 'mtech_program_added', 'mtech_program_removed', 'mtech_api_saved'), $redirect)
-    );
-
-    wp_safe_redirect($redirect);
-    exit;
-}
-add_action('admin_post_mtech_shortcodes_save_api_credentials', 'mtech_shortcodes_save_api_credentials_handler');
-
 function mtech_shortcodes_sanitize_program_slug($raw_slug) {
     // sanitize_title() is WordPress's built-in slug normalizer — same logic
     // used for post/page slugs. Turns "Automation Technology!" into "automation-technology".

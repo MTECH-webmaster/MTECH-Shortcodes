@@ -17,8 +17,6 @@ require_once __DIR__ . '/includes/database.php';
 require_once __DIR__ . '/includes/form-handlers.php';
 require_once __DIR__ . '/includes/shortcodes.php';
 require_once __DIR__ . '/includes/logging.php';
-require_once __DIR__ . '/includes/encryption.php';
-require_once __DIR__ . '/includes/api.php';
 require_once __DIR__ . '/includes/formatters/formatters.php';
 require_once __DIR__ . '/includes/transients.php';
 
@@ -41,19 +39,19 @@ class MTECH_Shortcodes {
     public static function activate_plugin() {
         mtech_shortcodes_create_tables(); // from database.php
 
-        if (!wp_next_scheduled('mtech_shortcodes_cron_generate_api_token')) {
-            wp_schedule_event(time(), 'twicedaily', 'mtech_shortcodes_cron_generate_api_token');
-        }
+        // if (!wp_next_scheduled('mtech_shortcodes_cron_generate_api_token')) {
+        //     wp_schedule_event(time(), 'twicedaily', 'mtech_shortcodes_cron_generate_api_token');
+        // }
     }
 
     public static function deactivate_plugin() {
-        wp_clear_scheduled_hook('mtech_shortcodes_cron_generate_api_token');
+        // wp_clear_scheduled_hook('mtech_shortcodes_cron_generate_api_token');
     }
 
     public function init() {
         add_action('admin_menu', array($this, 'add_admin_menu'));
 
-        add_action('mtech_shortcodes_cron_generate_api_token', 'mtech_shortcodes_run_scheduled_token_generation');
+        // add_action('mtech_shortcodes_cron_generate_api_token', 'mtech_shortcodes_run_scheduled_token_generation');
     }
 
     public function add_admin_menu() {
