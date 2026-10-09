@@ -1,0 +1,380 @@
+#mtech-shortcodes-tree,
+#mtech-shortcodes-tree ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#mtech-shortcodes-tree ul.mtech-nested {
+    padding-left: 22px;
+    border-left: 2px solid #e2e4e7;
+    margin-left: 6px;
+}
+
+/* School level */
+#mtech-shortcodes-tree > li {
+    margin-bottom: 4px;
+}
+
+#mtech-shortcodes-tree > li > .mtech-caret {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+/* Program level */
+#mtech-shortcodes-tree > li > ul.mtech-nested > li > .mtech-caret {
+    font-size: 13px;
+    font-weight: 500;
+    color: #2c3338;
+}
+
+.mtech-caret {
+    cursor: pointer;
+    user-select: none;
+    display: inline-block;
+    padding: 6px 4px;
+    border-radius: 3px;
+}
+
+.mtech-caret:hover {
+    background: #f0f0f1;
+}
+
+.mtech-caret::before {
+    content: "+";
+    display: inline-block;
+    width: 1em;
+    margin-right: 6px;
+    font-weight: bold;
+    color: #2271b1;
+}
+
+.mtech-caret-open::before {
+    content: "\2212"; /* minus sign */
+}
+
+.mtech-nested {
+    display: none;
+}
+
+.mtech-nested.mtech-active {
+    display: block;
+}
+
+/* Group each program's shortcode rows + add-new row in one visual card */
+#mtech-shortcodes-tree > li > ul.mtech-nested > li > ul.mtech-nested {
+    background: #f9f9f9;
+    border: 1px solid #e2e4e7;
+    border-radius: 4px;
+    padding: 4px 16px;
+    margin: 6px 0 14px 0;
+}
+
+/* Each shortcode row: save form + delete form sit side by side */
+#mtech-shortcodes-tree > li > ul.mtech-nested > li > ul.mtech-nested > li {
+    display: flex;
+    /* align-items: flex-end; */
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid #e2e4e7;
+}
+
+#mtech-shortcodes-tree > li > ul.mtech-nested > li > ul.mtech-nested > li:last-child {
+    border-bottom: none;
+}
+
+.mtech-shortcode-form,
+.mtech-shortcode-form-new {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.mtech-shortcode-form p,
+.mtech-shortcode-form-new p {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mtech-shortcode-form label,
+.mtech-shortcode-form-new label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #50575e;
+    margin-bottom: 4px;
+}
+
+/* Standard text inputs: consistent width so columns line up across rows */
+.mtech-shortcode-form input[type="text"],
+.mtech-shortcode-form-new input[type="text"] {
+    width: 140px;
+    height: 30px;
+    box-sizing: border-box;
+}
+
+/* Search checkbox needs its own wider container + room around the box itself */
+.mtech-shortcode-form p:has(input[type="checkbox"]),
+.mtech-shortcode-form-new p:has(input[type="checkbox"]) {
+    flex-direction: row;
+    align-items: center;
+    min-width: 90px;
+    height: 30px;
+}
+
+.mtech-shortcode-form input[type="checkbox"],
+.mtech-shortcode-form-new input[type="checkbox"] {
+    margin: 0 6px 0 0;
+    width: 18px;
+    height: 18px;
+}
+
+/* Buttons: match input height so they align on the same baseline */
+.mtech-shortcode-form .button,
+.mtech-shortcode-form-new .button,
+.mtech-shortcode-form-delete .button {
+    height: 30px;
+    line-height: 28px;
+    margin: 0;
+}
+
+/* Delete styled as a distinct, muted, destructive action — not a Save sibling */
+.mtech-shortcode-form-delete {
+    display: flex;
+    align-items: flex-end;
+}
+
+.mtech-shortcode-form-delete p {
+    margin: 0;
+}
+
+.mtech-shortcode-form-delete .button {
+    color: #b32d2e;
+    border-color: #b32d2e;
+    background: transparent;
+}
+
+.mtech-shortcode-form-delete .button:hover {
+    color: #fff;
+    background: #b32d2e;
+    border-color: #b32d2e;
+}
+
+/* Add-new row: label sits as a heading above its own field row */
+.li-new-shortcode-section {
+    flex-direction: column;
+    align-items: stretch !important;
+    padding-top: 16px !important;
+}
+
+.li-new-shortcode-section > p:first-child {
+    margin-bottom: 10px;
+}
+
+.li-new-shortcode-section > p:first-child strong {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #787c82;
+    font-weight: 600;
+}
+
+.li-new-shortcode-section .mtech-shortcode-form-new {
+    width: 100%;
+}
+
+
+/* ADD PROGRAM STYLING */
+/* Program row: caret + "Remove Program" link sit on one line */
+.mtech-program-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.mtech-program-row .mtech-caret {
+    flex: 1;
+}
+
+/* "Edit program" form — inline fields, matching the shortcode/add-program pattern */
+.mtech-program-edit-section {
+    margin: 8px 0 0 0;
+}
+
+.mtech-program-form-edit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.mtech-program-form-edit p {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mtech-program-form-edit label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #50575e;
+    margin-bottom: 4px;
+}
+
+.mtech-program-form-edit input[type="text"] {
+    width: 200px;
+    height: 30px;
+    box-sizing: border-box;
+}
+
+.mtech-program-form-edit .button {
+    height: 30px;
+    line-height: 28px;
+    margin: 0;
+}
+
+/* "Remove Program" link — subdued by default, reads as destructive on hover.
+   Hidden until the row is hovered/focused so it doesn't compete visually
+   with the caret at rest. */
+.mtech-program-form-delete {
+    margin: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.mtech-program-row:hover .mtech-program-form-delete,
+.mtech-program-form-delete:focus-within {
+    opacity: 1;
+}
+
+.mtech-remove-program-link {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #b32d2e;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.15s ease;
+}
+
+.mtech-remove-program-link:hover {
+    color: #b32d2e;
+    text-decoration-color: #b32d2e;
+}
+
+.mtech-remove-program-link:focus {
+    outline: 2px solid #b32d2e;
+    outline-offset: 2px;
+}
+
+/* "Add new program" section — same card treatment as "Add new shortcode",
+   but sits at the school level so it's visually distinct from that nested card */
+.li-new-program-section {
+    background: #f6f7f7;
+    border: 1px dashed #c3c4c7;
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin: 10px 0 6px 0;
+}
+
+.li-new-program-section p:first-child {
+    margin-bottom: 10px;
+}
+
+.li-new-program-section p:first-child strong {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #787c82;
+    font-weight: 600;
+}
+
+.mtech-program-form-new {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.mtech-program-form-new p {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mtech-program-form-new label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #50575e;
+    margin-bottom: 4px;
+}
+
+.mtech-program-form-new input[type="text"] {
+    width: 200px;
+    height: 30px;
+    box-sizing: border-box;
+}
+
+.mtech-program-form-new .button {
+    height: 30px;
+    line-height: 28px;
+    margin: 0;
+}
+
+/* "(optional)" hint next to the Coursedog Program ID label */
+.mtech-optional {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    color: #a7aaad;
+}
+
+
+
+/* Styling for the bulk edit additions */
+
+.mtech-bulk-edit-section {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.mtech-shortcode-row {
+    display: flex;
+    column-gap: 20px;
+}
+
+.mtech-shortcode-row-actions-wrapper {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 20px;
+}
+
+.mtech-shortcode-row-actions {
+    min-width: 300px;
+}
+
+.mtech-shortcode-row-actions-forms {
+    min-width: 300px;
+    display: flex;
+    margin-top: 10px;
+}
+
+.mtech-shortcode-row-actions form {
+    width: 130px;
+}
+
+.mtech-shortcode-input-margin-top {
+    margin-top: 10px;
+}
+
+.mtech-checkbox-field {
+    display: flex;
+    align-items: center;
+}

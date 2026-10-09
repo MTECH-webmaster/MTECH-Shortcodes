@@ -1,0 +1,18 @@
+/* Hide all tab contents by default */
+.tab-content {
+    display: none;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-top: none;
+}
+
+/* Only show the one with the .active class */
+.tab-content.active {
+    display: block;
+}
+
+/* Quick fix to make the native WP nav-tab look seamless with the container below it */
+.nav-tab-wrapper {
+    margin-bottom: 0;
+}
