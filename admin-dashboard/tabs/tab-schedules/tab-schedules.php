@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 global $wpdb;
 $table_schools    = $wpdb->prefix . 'mtech_shortcodes_schools';
 $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
-$table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
+$table_schedules = $wpdb->prefix . 'mtech_shortcodes_schedules';
 $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name ASC");
 ?>
 <h2>Program Schedules</h2>
@@ -44,12 +44,12 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
         <span class="mtech-caret" data-type="school"><?php echo esc_html($school->name); ?></span>
         <ul class="mtech-nested">
             <?php foreach ($programs as $program) :
-                $shortcode_rows = $wpdb->get_results(
+                $schedule_rows = $wpdb->get_results(
                     $wpdb->prepare(
-                        "SELECT id, type, field, search, search_query, effective_dates_range
-                         FROM $table_shortcodes
+                        "SELECT id, locations, start_date, hours, days
+                         FROM $table_schedules
                          WHERE program_id = %d
-                         ORDER BY type ASC",
+                         ORDER BY start_date ASC",
                         $program->id
                     )
                 );
@@ -124,77 +124,71 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                     
 
 
-<!-- START MOST RECENT UPDATES -->
+                    <!-- Bulk schedule item edit -->
                     <ul class="mtech-nested">
                         <li class="mtech-bulk-edit-section">
                             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-shortcode-bulk-form">
-                                <input type="hidden" name="action" value="mtech_shortcodes_save_shortcodes_bulk">
+                                <input type="hidden" name="action" value="mtech_shortcodes_save_schedules_bulk">
                                 <input type="hidden" name="program_id" value="<?php echo esc_attr($program->id); ?>">
-                                <?php wp_nonce_field('mtech_shortcodes_save_shortcodes_bulk_' . $program->id, 'mtech_shortcodes_bulk_nonce'); ?>
+                                <?php wp_nonce_field('mtech_shortcodes_save_schedules_bulk_' . $program->id, 'mtech_schedules_bulk_nonce'); ?>
 
-                                <?php foreach ($shortcode_rows as $shortcode) : ?>
+                                <?php foreach ($schedule_rows as $schedule_item) : ?>
                                     <div class="mtech-shortcode-row">
-                                        <input type="hidden" name="shortcodes[<?php echo esc_attr($shortcode->id); ?>][id]" value="<?php echo esc_attr($shortcode->id); ?>">
+                                        <input type="hidden" name="schedules[<?php echo esc_attr($schedule_item->id); ?>][id]" value="<?php echo esc_attr($schedule_item->id); ?>">
                                         <p>
                                             <label>
-                                                Type<br>
-                                                <input class="mtech-shortcode-input-margin-top" type="text" name="shortcodes[<?php echo esc_attr($shortcode->id); ?>][type]" value="<?php echo esc_attr($shortcode->type); ?>">
+                                                Locations<br>
+                                                <input class="mtech-shortcode-input-margin-top" type="text" name="schedules[<?php echo esc_attr($schedule_item->id); ?>][locations]" value="<?php echo esc_attr($schedule_item->locations); ?>">
                                             </label>
                                         </p>
                                         <p>
                                             <label>
-                                                Field<br>
-                                                <input class="mtech-shortcode-input-margin-top" type="text" name="shortcodes[<?php echo esc_attr($shortcode->id); ?>][field]" value="<?php echo esc_attr($shortcode->field); ?>">
-                                            </label>
-                                        </p>
-                                        <p class="mtech-checkbox-field">
-                                            <label>
-                                                <input class="mtech-shortcode-input-margin-top" type="checkbox" name="shortcodes[<?php echo esc_attr($shortcode->id); ?>][search]" value="1" <?php checked((bool) $shortcode->search, true); ?>>
-                                                Search
+                                                Start date<br>
+                                                <input class="mtech-shortcode-input-margin-top" type="text" name="schedules[<?php echo esc_attr($schedule_item->id); ?>][start_date]" value="<?php echo esc_attr($schedule_item->start_date); ?>">
                                             </label>
                                         </p>
                                         <p>
                                             <label>
-                                                Search Query <span class="mtech-optional">(use spaces, not %20)</span><br>
-                                                <input class="mtech-shortcode-input-margin-top" type="text" name="shortcodes[<?php echo esc_attr($shortcode->id); ?>][search_query]" value="<?php echo esc_attr($shortcode->search_query); ?>">
+                                                Hours<br>
+                                                <input class="mtech-shortcode-input-margin-top" type="text" name="schedules[<?php echo esc_attr($schedule_item->id); ?>][hours]" value="<?php echo esc_attr($schedule_item->hours); ?>">
                                             </label>
                                         </p>
                                         <p>
                                             <label>
-                                                Effective Dates Range<br>
-                                                <input class="mtech-shortcode-input-margin-top" type="text" name="shortcodes[<?php echo esc_attr($shortcode->id); ?>][effective_dates_range]" value="<?php echo esc_attr($shortcode->effective_dates_range); ?>">
+                                                Days<br>
+                                                <input class="mtech-shortcode-input-margin-top" type="text" name="schedules[<?php echo esc_attr($schedule_item->id); ?>][days]" value="<?php echo esc_attr($schedule_item->days); ?>">
                                             </label>
                                         </p>
                                     </div>
                                 <?php endforeach; ?>
 
-                                <?php if (!empty($shortcode_rows)) : ?>
+                                <?php if (!empty($schedule_rows)) : ?>
                                     <p class="mtech-bulk-save-row">
-                                        <button type="submit" class="button button-primary">Save All Shortcodes</button>
+                                        <button type="submit" class="button button-primary">Save <?php echo esc_html($program->name); ?> schedule</button>
                                     </p>
                                 <?php endif; ?>
                             </form>
 
                             <!-- Per-row delete / delete-transient actions, outside the bulk form -->
                             <div class="mtech-shortcode-row-actions-wrapper">
-                                <?php foreach ($shortcode_rows as $shortcode) : ?>
+                                <?php foreach ($schedule_rows as $schedule_item) : ?>
                                     <div class="mtech-shortcode-row-actions">
-                                        <span class="mtech-row-actions-label"><?php echo esc_html($shortcode->type); ?></span>
+                                        <span class="mtech-row-actions-label"><?php echo esc_html($schedule_item->type); ?></span>
 
                                         <div class="mtech-shortcode-row-actions-forms">
                                             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-shortcode-form-delete">
                                                 <input type="hidden" name="action" value="mtech_shortcodes_delete_shortcode_transient">
                                                 <input type="hidden" name="program_slug" value="<?php echo esc_attr($program->slug); ?>">
-                                                <input type="hidden" name="shortcode_type" value="<?php echo esc_attr($shortcode->type); ?>">
-                                                <?php wp_nonce_field('mtech_shortcodes_delete_shortcode_transient_' . $program->slug . $shortcode->type, 'mtech_shortcodes_delete_nonce'); ?>
+                                                <input type="hidden" name="shortcode_type" value="<?php echo esc_attr($schedule_item->type); ?>">
+                                                <?php wp_nonce_field('mtech_shortcodes_delete_shortcode_transient_' . $program->slug . $schedule_item->type, 'mtech_shortcodes_delete_nonce'); ?>
                                                 <button type="submit" class="button button-secondary mtech-shortcode-input-margin-top">Delete Transient</button>
                                             </form>
 
                                             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-shortcode-form-delete" onsubmit="return confirm('Delete this shortcode? This cannot be undone.');">
                                                 <input type="hidden" name="action" value="mtech_shortcodes_delete_shortcode">
                                                 <input type="hidden" name="program_id" value="<?php echo esc_attr($program->id); ?>">
-                                                <input type="hidden" name="shortcode_id" value="<?php echo esc_attr($shortcode->id); ?>">
-                                                <?php wp_nonce_field('mtech_shortcodes_delete_shortcode_' . $shortcode->id, 'mtech_shortcodes_delete_nonce'); ?>
+                                                <input type="hidden" name="shortcode_id" value="<?php echo esc_attr($schedule_item->id); ?>">
+                                                <?php wp_nonce_field('mtech_shortcodes_delete_shortcode_' . $schedule_item->id, 'mtech_shortcodes_delete_nonce'); ?>
                                                 <button type="submit" class="button button-secondary mtech-shortcode-input-margin-top">Delete</button>
                                             </form>
                                         </div>
@@ -205,44 +199,38 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
 
                         <!-- Add new shortcode for this program -->
                             <li class="li-new-shortcode-section">
-                                <p><strong>Add new shortcode</strong></p>
+                                <p><strong>Add new schedule item</strong></p>
                                 <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-shortcode-form mtech-shortcode-form-new">
-                                    <input type="hidden" name="action" value="mtech_shortcodes_save_shortcode">
+                                    <input type="hidden" name="action" value="mtech_shortcodes_save_schedule">
                                     <input type="hidden" name="program_id" value="<?php echo esc_attr($program->id); ?>">
                                     <input type="hidden" name="shortcode_id" value="">
-                                    <?php wp_nonce_field('mtech_shortcodes_save_shortcode_' . $program->id, 'mtech_shortcodes_nonce'); ?>
+                                    <?php wp_nonce_field('mtech_shortcodes_save_schedule_' . $program->id, 'mtech_schedule_nonce'); ?>
                                     <p>
                                         <label>
-                                            Type<br>
-                                            <input class="mtech-shortcode-input-margin-top" type="text" name="type" value="">
+                                            Locations<br>
+                                            <input class="mtech-shortcode-input-margin-top" type="text" name="locations" value="">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
-                                            Field<br>
-                                            <input class="mtech-shortcode-input-margin-top" type="text" name="field" value="">
+                                            Start date<br>
+                                            <input class="mtech-shortcode-input-margin-top" type="text" name="start_date" value="">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
-                                            <input class="mtech-shortcode-input-margin-top" type="checkbox" name="search" value="1">
-                                            Search
+                                            Hours<br>
+                                            <input class="mtech-shortcode-input-margin-top" type="text" name="hours" value="">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
-                                            Search Query <span class="mtech-optional">(use spaces, not %20)</span><br>
-                                            <input class="mtech-shortcode-input-margin-top" type="text" name="search_query" value="">
+                                            Days<br>
+                                            <input class="mtech-shortcode-input-margin-top" type="text" name="days" value="">
                                         </label>
                                     </p>
                                     <p>
-                                        <label>
-                                            Effective Dates Range<br>
-                                            <input class="mtech-shortcode-input-margin-top" type="text" name="effective_dates_range" value="">
-                                        </label>
-                                    </p>
-                                    <p>
-                                        <button type="submit" class="button button-primary">Add Shortcode</button>
+                                        <button type="submit" class="button button-primary">Add Schedule item</button>
                                     </p>
                                 </form>
                             </li>
