@@ -27,16 +27,16 @@ function mtech_shortcodes_enqueue_dashboard_script($hook) {
 
     // Shortcodes tab styles
     wp_enqueue_style(
-        'mtech-shortcodes-tab-shortcodes',
-        plugin_dir_url(__FILE__) . 'tabs/tab-shortcodes/tab-shortcodes.css',
+        'mtech-shortcodes-tab-schedules',
+        plugin_dir_url(__FILE__) . 'tabs/tab-schedules/tab-schedules.css',
         array(),
-        filemtime(__DIR__ . '/tabs/tab-shortcodes/tab-shortcodes.css'),
+        filemtime(__DIR__ . '/tabs/tab-schedules/tab-schedules.css'),
         // changed from '1.0' to filetime so that old versions don't get cached.
     );
 
     wp_enqueue_script(
-        'mtech-shortcodes-tab-shortcodes',
-        plugin_dir_url(__FILE__) . 'tabs/tab-shortcodes/tab-shortcodes.js',
+        'mtech-shortcodes-tab-schedules',
+        plugin_dir_url(__FILE__) . 'tabs/tab-schedules/tab-schedules.js',
         array(),
         '1.0',
         true
@@ -56,7 +56,7 @@ function display_shortcodes_admin_dashboard() {
         <!-- Tab Navigation Links -->
         <nav class="nav-tab-wrapper">
             <a href="#tab-general" class="nav-tab nav-tab-active" data-tab="general">Instructions</a>
-            <a href="#tab-advanced" class="nav-tab" data-tab="advanced">Shortcodes</a>
+            <a href="#tab-advanced" class="nav-tab" data-tab="advanced">Schedules</a>
         </nav>
 
         <!-- Tab Content Sections -->
@@ -66,7 +66,7 @@ function display_shortcodes_admin_dashboard() {
             </div>
 
             <div id="tab-advanced" class="tab-content">
-                <?php require __DIR__ . '/tabs/tab-shortcodes/tab-shortcodes.php'; ?>
+                <?php require __DIR__ . '/tabs/tab-schedules/tab-schedules.php'; ?>
             </div>
         </div>
     </div>
