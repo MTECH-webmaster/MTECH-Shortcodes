@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 }
 
 function mtech_shortcodes_enqueue_dashboard_script($hook) {
-    // Only load on our specific settings page
-    if ($hook !== 'settings_page_mtech-shortcodes') {
+    // Only load on the top level mtech shortcodes plugin page
+    if ($hook !== 'toplevel_page_mtech-shortcodes') {
         return;
     }
 
@@ -45,7 +45,7 @@ function mtech_shortcodes_enqueue_dashboard_script($hook) {
 add_action('admin_enqueue_scripts', 'mtech_shortcodes_enqueue_dashboard_script');
 
 function display_shortcodes_admin_dashboard() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_mtech_shortcodes')) {
         return;
     }
 

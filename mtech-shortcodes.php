@@ -19,6 +19,7 @@ require_once __DIR__ . '/includes/shortcodes.php';
 require_once __DIR__ . '/includes/logging.php';
 require_once __DIR__ . '/includes/formatters/formatters.php';
 require_once __DIR__ . '/includes/transients.php';
+require_once __DIR__ . '/includes/role.php';
 
 class MTECH_Shortcodes {
 
@@ -38,6 +39,7 @@ class MTECH_Shortcodes {
 
     public static function activate_plugin() {
         mtech_shortcodes_create_tables(); // from database.php
+        mtech_shortcodes_add_custom_editor_role(); // from role.php
 
         // if (!wp_next_scheduled('mtech_shortcodes_cron_generate_api_token')) {
         //     wp_schedule_event(time(), 'twicedaily', 'mtech_shortcodes_cron_generate_api_token');
@@ -45,6 +47,8 @@ class MTECH_Shortcodes {
     }
 
     public static function deactivate_plugin() {
+        mtech_shortcodes_remove_custom_editor_role(); // from role.php
+
         // wp_clear_scheduled_hook('mtech_shortcodes_cron_generate_api_token');
     }
 
@@ -55,12 +59,14 @@ class MTECH_Shortcodes {
     }
 
     public function add_admin_menu() {
-        add_options_page(
+        add_menu_page(
             'MTECH Shortcodes',
             'MTECH Shortcodes',
-            'manage_options',
+            'edit_mtech_shortcodes',
             'mtech-shortcodes',
-            'display_shortcodes_admin_dashboard' // from dashboard.php
+            'display_shortcodes_admin_dashboard', // from dashboard.php
+            'dashicons-shortcode',
+            30
         );
     }
 

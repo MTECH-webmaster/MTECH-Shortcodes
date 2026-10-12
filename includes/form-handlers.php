@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) {
 }
 
 function mtech_shortcodes_save_shortcode_handler() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
 
@@ -88,7 +88,7 @@ function mtech_shortcodes_save_shortcode_handler() {
 add_action('admin_post_mtech_shortcodes_save_shortcode', 'mtech_shortcodes_save_shortcode_handler');
 
 function mtech_shortcodes_save_shortcodes_bulk_handler() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
 
@@ -188,7 +188,7 @@ function mtech_shortcodes_save_shortcodes_bulk_handler() {
 add_action('admin_post_mtech_shortcodes_save_shortcodes_bulk', 'mtech_shortcodes_save_shortcodes_bulk_handler');
 
 function mtech_shortcodes_delete_shortcode_transient_handler() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
 
@@ -217,7 +217,7 @@ function mtech_shortcodes_delete_shortcode_transient_handler() {
 add_action('admin_post_mtech_shortcodes_delete_shortcode_transient', 'mtech_shortcodes_delete_shortcode_transient_handler');
 
 function mtech_shortcodes_delete_shortcode_handler() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
 
@@ -251,7 +251,7 @@ function mtech_shortcodes_delete_shortcode_handler() {
 add_action('admin_post_mtech_shortcodes_delete_shortcode', 'mtech_shortcodes_delete_shortcode_handler');
 
 function mtech_shortcodes_add_program_handler() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
 
@@ -321,7 +321,7 @@ function mtech_shortcodes_add_program_handler() {
 add_action('admin_post_mtech_shortcodes_add_program', 'mtech_shortcodes_add_program_handler');
 
 function mtech_shortcodes_duplicate_program_handler() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
 
@@ -449,7 +449,7 @@ function mtech_shortcodes_duplicate_program_handler() {
 add_action('admin_post_mtech_shortcodes_duplicate_program', 'mtech_shortcodes_duplicate_program_handler');
 
 function mtech_shortcodes_remove_program_handler() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
 
@@ -493,7 +493,7 @@ function mtech_shortcodes_sanitize_program_slug($raw_slug) {
 }
 
 function mtech_shortcodes_edit_program_handler() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
 
