@@ -13,6 +13,10 @@
     - form-handlers.php (POST fields will change)
     - tab-schedules.php (dashboard shortcodes frontend. Needs to be updated for saving new 4 fields)
 - Update generate db table code
-- Abstract away program slug
+
+### UI refactor and add new rows without page refresh
+
+### Misc
+- Remove program slug from schedules tab
 
 ### HTML table template
