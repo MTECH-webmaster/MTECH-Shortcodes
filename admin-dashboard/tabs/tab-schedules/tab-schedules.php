@@ -9,7 +9,7 @@ $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
 $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_shortcodes';
 $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name ASC");
 ?>
-<h2>Shortcodes</h2>
+<h2>Program Schedules</h2>
 <?php if (isset($_GET['mtech_saved']) && $_GET['mtech_saved'] === '1') : ?>
     <div class="notice notice-success is-dismissible"><p>Shortcode values saved.</p></div>
 <?php endif; ?>
@@ -33,12 +33,6 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
 <?php endif; ?>
 <ul id="mtech-shortcodes-tree">
 <?php foreach ($schools as $school) :
-    // $programs = $wpdb->get_results(
-    //     $wpdb->prepare(
-    //         "SELECT id, name, shortcodes_program_id FROM $table_programs WHERE school_id = %d ORDER BY name ASC",
-    //         $school->id
-    //     )
-    // );
     $programs = $wpdb->get_results(
         $wpdb->prepare(
             "SELECT id, name, slug, shortcodes_program_id FROM $table_programs WHERE school_id = %d ORDER BY name ASC",
