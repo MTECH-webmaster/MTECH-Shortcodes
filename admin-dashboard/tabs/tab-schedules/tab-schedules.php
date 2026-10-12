@@ -124,7 +124,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                     
 
 
-<!-- START MOST RECENT UPDATES -->
+                    <!-- Bulk schedule item edit -->
                     <ul class="mtech-nested">
                         <li class="mtech-bulk-edit-section">
                             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-shortcode-bulk-form">

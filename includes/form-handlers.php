@@ -136,30 +136,31 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
             wp_die('Invalid shortcode reference', 400);
         }
 
-        $type  = isset($row['type']) ? sanitize_text_field($row['type']) : '';
-        $field = isset($row['field']) ? sanitize_text_field($row['field']) : '';
+        $locations  = isset($row['locations']) ? sanitize_text_field($row['locations']) : '';
+        $start_date = isset($row['start_date']) ? sanitize_text_field($row['start_date']) : '';
+        $hours      = isset($row['hours']) ? sanitize_text_field($row['hours']) : '';
+        $days       = isset($row['days']) ? sanitize_text_field($row['days']) : '';
 
-        if ($type === '' || $field === '') {
-            wp_die('Type and Field are required for every shortcode.', 400);
-        }
+        // if ($locations === '' || $start_date === '') {
+        //     wp_die('Locations and start date are required for every schedule item.', 400);
+        // }
 
-        // The (program_id, type) unique key means two rows in this same
-        // submission can't both claim the same type
-        if (in_array($type, $seen_types, true)) {
-            wp_die('Duplicate type "' . esc_html($type) . '" — each shortcode type must be unique within a program.', 400);
-        }
-        $seen_types[] = $type;
+        // The (program_id, locations) unique key means two rows in this same
+        // submission can't both claim the same locations
+        // if (in_array($locations, $seen_types, true)) {
+        //     wp_die('Duplicate locations "' . esc_html($locations) . '" — each shortcode locations must be unique within a program.', 400);
+        // }
+        // $seen_types[] = $type;
 
         $updates[$shortcode_id] = array(
-            'type'                  => $type,
-            'field'                 => $field,
-            'search'                => !empty($row['search']) ? 1 : 0,
-            'search_query'          => isset($row['search_query']) ? sanitize_text_field($row['search_query']) : '',
-            'effective_dates_range' => isset($row['effective_dates_range']) ? sanitize_text_field($row['effective_dates_range']) : '',
+            'locations'                  => $locations,
+            'start_date'                 => $start_date,
+            'hours'                     => $hours,
+            'days'                      => $days,
         );
     }
 
-    $formats = array('%s', '%s', '%d', '%s', '%s');
+    $formats = array('%s', '%s', '%s', '%s');
 
     $wpdb->query('START TRANSACTION');
 
@@ -180,7 +181,7 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
 
     $wpdb->query('COMMIT');
 
-    $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
+    $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-schedules');
     $redirect = add_query_arg('mtech_saved', '1', remove_query_arg(array('mtech_saved', 'mtech_deleted', 'mtech_program_added', 'mtech_program_removed', 'mtech_program_updated'), $redirect));
 
     wp_safe_redirect($redirect);
