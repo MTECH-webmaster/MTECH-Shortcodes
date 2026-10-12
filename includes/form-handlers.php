@@ -19,7 +19,7 @@ function mtech_shortcodes_save_shortcode_handler() {
 
     global $wpdb;
     $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_shortcodes';
+    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
 
     // Confirm the program actually exists before attaching a shortcode to it
     $program_exists = $wpdb->get_var(
@@ -101,7 +101,7 @@ function mtech_shortcodes_save_shortcodes_bulk_handler() {
 
     global $wpdb;
     $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_shortcodes';
+    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
 
     $program_exists = $wpdb->get_var(
         $wpdb->prepare("SELECT id FROM $table_programs WHERE id = %d", $program_id)
@@ -230,7 +230,7 @@ function mtech_shortcodes_delete_shortcode_handler() {
     }
 
     global $wpdb;
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_shortcodes';
+    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
 
     $result = $wpdb->delete(
         $table_shortcodes,
@@ -403,7 +403,7 @@ function mtech_shortcodes_duplicate_program_handler() {
     //  START DUPLICATE SHORTCODES  //
     //////////////////////////////////
 
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_shortcodes';
+    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
 
     $shortcode_rows = $wpdb->get_results(
         $wpdb->prepare(
@@ -462,7 +462,7 @@ function mtech_shortcodes_remove_program_handler() {
 
     global $wpdb;
     $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_shortcodes';
+    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
 
     // Cascade: remove this program's shortcodes first, since there's no
     // database-level foreign key to do this automatically. Without this step,

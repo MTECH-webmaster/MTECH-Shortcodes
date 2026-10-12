@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 global $wpdb;
 $table_schools    = $wpdb->prefix . 'mtech_shortcodes_schools';
 $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
-$table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_shortcodes';
+$table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
 $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name ASC");
 ?>
 <h2>Program Schedules</h2>
