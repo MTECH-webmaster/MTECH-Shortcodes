@@ -35,22 +35,18 @@ function mtech_shortcodes_create_tables() {
 
     // id: unique key for shortcode record
     // program_id: references mtech_shortcodes_programs.id
-    // type: e.g. "cost", "registration", "default", "prereqs"
-    // field: field key from the Coursedog API response, e.g. "Wx9fb"
-    $table_shortcode_items = $wpdb->prefix . 'mtech_shortcodes_items';
-    $sql_shortcodes = "CREATE TABLE $table_shortcode_items (
+    $table_shortcode_schedules = $wpdb->prefix . 'mtech_shortcodes_schedules';
+    $sql_schedules = "CREATE TABLE $table_shortcode_schedules (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         program_id mediumint(9) NOT NULL,
-        type varchar(255) NOT NULL,
-        field varchar(255) NOT NULL,
-        search tinyint(1) NOT NULL DEFAULT 0,
-        search_query varchar(255),
-        effective_dates_range varchar(255),
+        locations varchar(100),
+        start_date varchar(30),
+        hours varchar(30),
+        days varchar(50),
         PRIMARY KEY  (id),
-        UNIQUE KEY program_type (program_id, type),
         KEY program_id (program_id)
     ) $charset_collate;";
-    dbDelta( $sql_shortcodes );
+    dbDelta( $sql_schedules );
 
     mtech_shortcodes_seed_schools();
     mtech_shortcodes_seed_programs();
@@ -147,10 +143,10 @@ function mtech_shortcodes_db_get_program_by_slug($slug) {
 
 function mtech_shortcodes_db_get_shortcode($program_id, $type) {
     global $wpdb;
-    $table_shortcode_items = $wpdb->prefix . 'mtech_shortcodes_items';
+    $table_shortcode_schedules = $wpdb->prefix . 'mtech_shortcodes_schedules';
 
     $shortcode_row = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM $table_shortcode_items WHERE program_id = %d AND type = %s",
+        "SELECT * FROM $table_shortcode_schedules WHERE program_id = %d AND type = %s",
         $program_id,
         $type
     ));

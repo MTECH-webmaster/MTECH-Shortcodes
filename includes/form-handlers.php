@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-function mtech_shortcodes_save_shortcode_handler() {
+function mtech_shortcodes_save_schedule_handler() {
     if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
@@ -12,14 +12,14 @@ function mtech_shortcodes_save_shortcode_handler() {
     $program_id   = isset($_POST['program_id']) ? absint($_POST['program_id']) : 0;
     $shortcode_id = isset($_POST['shortcode_id']) && $_POST['shortcode_id'] !== '' ? absint($_POST['shortcode_id']) : 0;
 
-    if (!$program_id || !isset($_POST['mtech_shortcodes_nonce']) ||
-        !wp_verify_nonce($_POST['mtech_shortcodes_nonce'], 'mtech_shortcodes_save_shortcode_' . $program_id)) {
+    if (!$program_id || !isset($_POST['mtech_schedule_nonce']) ||
+        !wp_verify_nonce($_POST['mtech_schedule_nonce'], 'mtech_shortcodes_save_schedule_' . $program_id)) {
         wp_die('Invalid request', 400);
     }
 
     global $wpdb;
     $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
+    $table_schedules = $wpdb->prefix . 'mtech_shortcodes_schedules';
 
     // Confirm the program actually exists before attaching a shortcode to it
     $program_exists = $wpdb->get_var(
@@ -29,79 +29,80 @@ function mtech_shortcodes_save_shortcode_handler() {
         wp_die('Invalid program', 400);
     }
 
-    $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
-    $field = isset($_POST['field']) ? sanitize_text_field($_POST['field']) : '';
+    $locations = isset($_POST['locations']) ? sanitize_text_field($_POST['locations']) : '';
+    $start_date = isset($_POST['start_date']) ? sanitize_text_field($_POST['start_date']) : '';
+    $hours = isset($_POST['hours']) ? sanitize_text_field($_POST['hours']) : '';
+    $days = isset($_POST['days']) ? sanitize_text_field($_POST['days']) : '';
 
     // type and field are required columns (NOT NULL) — reject rather than
     // let $wpdb->insert() fail silently on a missing required value
-    if ($type === '' || $field === '') {
-        wp_die('Type and Field are required', 400);
-    }
+    // if ($type === '' || $field === '') {
+    //     wp_die('Type and Field are required', 400);
+    // }
 
     $data = array(
         'program_id'             => $program_id,
-        'type'                   => $type,
-        'field'                  => $field,
-        'search'                 => !empty($_POST['search']) ? 1 : 0,
-        'search_query'           => isset($_POST['search_query']) ? sanitize_text_field($_POST['search_query']) : '',
-        'effective_dates_range'  => isset($_POST['effective_dates_range']) ? sanitize_text_field($_POST['effective_dates_range']) : '',
+        'locations'              => $locations,
+        'start_date'             => $start_date,
+        'hours'                  => $hours,
+        'days'                   => $days,
     );
 
-    $formats = array('%d', '%s', '%s', '%d', '%s', '%s');
+    $formats = array('%d', '%s', '%s', '%s', '%s');
 
     if ($shortcode_id) {
         // Updating an existing row
         $result = $wpdb->update(
-            $table_shortcodes,
+            $table_schedules,
             $data,
             array('id' => $shortcode_id),
             $formats,
             array('%d')
         );
     } else {
-        // Inserting a new row — check the (program_id, type) unique constraint
+        // Inserting a new row — check the (program_id, id) unique constraint
         // ourselves first, so we can show a clear error rather than a raw DB failure
         $duplicate = $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT id FROM $table_shortcodes WHERE program_id = %d AND type = %s",
+                "SELECT id FROM $table_schedules WHERE program_id = %d AND id = %d",
                 $program_id,
-                $type
+                $shortcode_id
             )
         );
         if ($duplicate) {
-            wp_die('A shortcode of this type already exists for this program.', 400);
+            wp_die('A schedule item with this ID already exists for this program.', 400);
         }
 
-        $result = $wpdb->insert($table_shortcodes, $data, $formats);
+        $result = $wpdb->insert($table_schedules, $data, $formats);
     }
 
     if ($result === false) {
         wp_die('Database error while saving shortcode.', 500);
     }
 
-    $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
+    $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-schedules');
     $redirect = add_query_arg('mtech_saved', '1', remove_query_arg('mtech_saved', $redirect));
 
     wp_safe_redirect($redirect);
     exit;
 }
-add_action('admin_post_mtech_shortcodes_save_shortcode', 'mtech_shortcodes_save_shortcode_handler');
+add_action('admin_post_mtech_shortcodes_save_schedule', 'mtech_shortcodes_save_schedule_handler');
 
-function mtech_shortcodes_save_shortcodes_bulk_handler() {
+function mtech_shortcodes_save_schedules_bulk_handler() {
     if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
     }
 
     $program_id = isset($_POST['program_id']) ? absint($_POST['program_id']) : 0;
 
-    if (!$program_id || !isset($_POST['mtech_shortcodes_bulk_nonce']) ||
-        !wp_verify_nonce($_POST['mtech_shortcodes_bulk_nonce'], 'mtech_shortcodes_save_shortcodes_bulk_' . $program_id)) {
+    if (!$program_id || !isset($_POST['mtech_schedules_bulk_nonce']) ||
+        !wp_verify_nonce($_POST['mtech_schedules_bulk_nonce'], 'mtech_shortcodes_save_schedules_bulk_' . $program_id)) {
         wp_die('Invalid request', 400);
     }
 
     global $wpdb;
     $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
+    $table_schedules = $wpdb->prefix . 'mtech_shortcodes_schedules';
 
     $program_exists = $wpdb->get_var(
         $wpdb->prepare("SELECT id FROM $table_programs WHERE id = %d", $program_id)
@@ -110,7 +111,7 @@ function mtech_shortcodes_save_shortcodes_bulk_handler() {
         wp_die('Invalid program', 400);
     }
 
-    $submitted = isset($_POST['shortcodes']) && is_array($_POST['shortcodes']) ? $_POST['shortcodes'] : array();
+    $submitted = isset($_POST['schedules']) && is_array($_POST['schedules']) ? $_POST['schedules'] : array();
 
     if (empty($submitted)) {
         // Nothing submitted — treat as a no-op rather than an error
@@ -120,7 +121,7 @@ function mtech_shortcodes_save_shortcodes_bulk_handler() {
     // Fetch the IDs actually belonging to this program, so a tampered POST
     // can't update another program's shortcode rows
     $owned_ids = $wpdb->get_col(
-        $wpdb->prepare("SELECT id FROM $table_shortcodes WHERE program_id = %d", $program_id)
+        $wpdb->prepare("SELECT id FROM $table_schedules WHERE program_id = %d", $program_id)
     );
     $owned_ids = array_map('absint', $owned_ids);
 
@@ -164,7 +165,7 @@ function mtech_shortcodes_save_shortcodes_bulk_handler() {
 
     foreach ($updates as $shortcode_id => $data) {
         $result = $wpdb->update(
-            $table_shortcodes,
+            $table_schedules,
             $data,
             array('id' => $shortcode_id),
             $formats,
@@ -185,7 +186,7 @@ function mtech_shortcodes_save_shortcodes_bulk_handler() {
     wp_safe_redirect($redirect);
     exit;
 }
-add_action('admin_post_mtech_shortcodes_save_shortcodes_bulk', 'mtech_shortcodes_save_shortcodes_bulk_handler');
+add_action('admin_post_mtech_shortcodes_save_schedules_bulk', 'mtech_shortcodes_save_schedules_bulk_handler');
 
 function mtech_shortcodes_delete_shortcode_transient_handler() {
     if (!current_user_can('edit_mtech_shortcodes')) {
@@ -230,7 +231,7 @@ function mtech_shortcodes_delete_shortcode_handler() {
     }
 
     global $wpdb;
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
+    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_schedules';
 
     $result = $wpdb->delete(
         $table_shortcodes,
@@ -403,7 +404,7 @@ function mtech_shortcodes_duplicate_program_handler() {
     //  START DUPLICATE SHORTCODES  //
     //////////////////////////////////
 
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
+    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_schedules';
 
     $shortcode_rows = $wpdb->get_results(
         $wpdb->prepare(
@@ -462,7 +463,7 @@ function mtech_shortcodes_remove_program_handler() {
 
     global $wpdb;
     $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_items';
+    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_schedules';
 
     // Cascade: remove this program's shortcodes first, since there's no
     // database-level foreign key to do this automatically. Without this step,
