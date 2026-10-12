@@ -1,7 +1,7 @@
 ﻿# MTECH Shortcodes
 
 
-## Next steps
+## Initial setup
 - Test custom role
 - Remove API tab
 - Turn shortcodes tab into "schedules" tab
@@ -10,3 +10,5 @@
 - Define db table requirements
 - Update generate db table code
 - Abstract away program slug
+
+### HTML table template
