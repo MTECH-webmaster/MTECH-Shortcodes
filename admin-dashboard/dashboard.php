@@ -55,14 +55,14 @@ function display_shortcodes_admin_dashboard() {
     <div class="wp-tabs-wrapper">
         <!-- Tab Navigation Links -->
         <nav class="nav-tab-wrapper">
-            <a href="#tab-general" class="nav-tab nav-tab-active" data-tab="general">API</a>
+            <a href="#tab-general" class="nav-tab nav-tab-active" data-tab="general">Instructions</a>
             <a href="#tab-advanced" class="nav-tab" data-tab="advanced">Shortcodes</a>
         </nav>
 
         <!-- Tab Content Sections -->
         <div class="tab-content-container">
             <div id="tab-general" class="tab-content active">
-                <?php require __DIR__ . '/tabs/tab-api/tab-api.php'; ?>
+                <?php require __DIR__ . '/tabs/tab-instructions/tab-instructions.php'; ?>
             </div>
 
             <div id="tab-advanced" class="tab-content">
