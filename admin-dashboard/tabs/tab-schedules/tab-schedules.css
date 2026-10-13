@@ -383,3 +383,18 @@
     display: flex;
     align-items: center;
 }
+
+
+
+/* START marking items to be deleted */
+.mtech-shortcode-row.mtech-row-marked-delete {
+    opacity: 0.55;
+    background: #fcf0f1;
+}
+.mtech-shortcode-row.mtech-row-marked-delete input[type="text"] {
+    text-decoration: line-through;
+}
+.mtech-row-delete {
+    color: #b32d2e;
+}
+/* END marking items to be deleted */

@@ -10,9 +10,21 @@ $table_schedules = $wpdb->prefix . 'mtech_shortcodes_schedules';
 $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name ASC");
 ?>
 <h2>Program Schedules</h2>
-<?php if (isset($_GET['mtech_saved']) && $_GET['mtech_saved'] === '1') : ?>
-    <div class="notice notice-success is-dismissible"><p>Shortcode values saved.</p></div>
+<!-- Saved notice -->
+<?php if (isset($_GET['mtech_saved']) && $_GET['mtech_saved'] === '1') :
+    $added   = isset($_GET['mtech_added'])   ? absint($_GET['mtech_added'])   : 0;
+    $updated = isset($_GET['mtech_updated']) ? absint($_GET['mtech_updated']) : 0;
+    $removed = isset($_GET['mtech_removed']) ? absint($_GET['mtech_removed']) : 0;
+
+    $parts = array();
+    if ($added)   { $parts[] = $added . ' added'; }
+    if ($updated) { $parts[] = $updated . ' updated'; }
+    if ($removed) { $parts[] = $removed . ' deleted'; }
+    $message = $parts ? 'Schedule saved: ' . implode(', ', $parts) . '.' : 'Schedule saved. No changes.';
+?>
+    <div class="notice notice-success is-dismissible"><p><?php echo esc_html($message); ?></p></div>
 <?php endif; ?>
+<!-- End saved notice -->
 <?php if (isset($_GET['mtech_deleted']) && $_GET['mtech_deleted'] === '1') : ?>
     <div class="notice notice-success is-dismissible"><p>Shortcode deleted.</p></div>
 <?php endif; ?>
@@ -159,6 +171,12 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                                                 <input class="mtech-shortcode-input-margin-top" type="text" name="schedules[<?php echo esc_attr($schedule_item->id); ?>][days]" value="<?php echo esc_attr($schedule_item->days); ?>">
                                             </label>
                                         </p>
+                                        <p>
+                                            <label class="mtech-row-delete">
+                                                <input type="checkbox" name="delete_schedules[]" value="<?php echo esc_attr($schedule_item->id); ?>">
+                                                Delete this row
+                                            </label>
+                                        </p>
                                     </div>
                                 <?php endforeach; ?>
 
@@ -187,13 +205,8 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                                                 <button type="submit" class="button button-secondary mtech-shortcode-input-margin-top">Delete Transient</button>
                                             </form>
 
-                                            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-shortcode-form-delete" onsubmit="return confirm('Delete this shortcode? This cannot be undone.');">
-                                                <input type="hidden" name="action" value="mtech_shortcodes_delete_shortcode">
-                                                <input type="hidden" name="program_id" value="<?php echo esc_attr($program->id); ?>">
-                                                <input type="hidden" name="shortcode_id" value="<?php echo esc_attr($schedule_item->id); ?>">
-                                                <?php wp_nonce_field('mtech_shortcodes_delete_shortcode_' . $schedule_item->id, 'mtech_shortcodes_delete_nonce'); ?>
-                                                <button type="submit" class="button button-secondary mtech-shortcode-input-margin-top">Delete</button>
-                                            </form>
+                                            <!-- Schedule row delete button was removed from here -->
+
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
