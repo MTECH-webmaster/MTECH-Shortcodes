@@ -381,29 +381,23 @@ function mtech_shortcodes_add_program_handler() {
         wp_die('Program name is required', 400);
     }
 
-    $slug = isset($_POST['slug']) ? mtech_shortcodes_sanitize_program_slug($_POST['slug']) : '';
-    if ($slug === '') {
-        wp_die('A valid program slug is required', 400);
-    }
+    // $slug = isset($_POST['slug']) ? mtech_shortcodes_sanitize_program_slug($_POST['slug']) : '';
+    // if ($slug === '') {
+    //     wp_die('A valid program slug is required', 400);
+    // }
 
-    $duplicate_slug = $wpdb->get_var(
-        $wpdb->prepare("SELECT id FROM $table_programs WHERE slug = %s", $slug)
-    );
-    if ($duplicate_slug) {
-        wp_die('This slug is already in use by another program.', 400);
-    }
-
-    $shortcodes_program_id = isset($_POST['shortcodes_program_id']) ? sanitize_text_field($_POST['shortcodes_program_id']) : '';
+    // $duplicate_slug = $wpdb->get_var(
+    //     $wpdb->prepare("SELECT id FROM $table_programs WHERE slug = %s", $slug)
+    // );
+    // if ($duplicate_slug) {
+    //     wp_die('This slug is already in use by another program.', 400);
+    // }
 
     $data = array(
         'school_id' => $school_id,
         'name'      => $name,
-        'slug'      => $slug,
-        // Store NULL rather than an empty string when no Coursedog ID is given,
-        // so the column's UNIQUE-among-non-null behavior stays meaningful
-        'shortcodes_program_id' => $shortcodes_program_id !== '' ? $shortcodes_program_id : null,
     );
-    $formats = array('%d', '%s', '%s', $shortcodes_program_id !== '' ? '%s' : null);
+    $formats = array('%d', '%s');
 
     $result = $wpdb->insert($table_programs, $data, $formats);
 

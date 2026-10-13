@@ -47,7 +47,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
 <?php foreach ($schools as $school) :
     $programs = $wpdb->get_results(
         $wpdb->prepare(
-            "SELECT id, name, slug, shortcodes_program_id FROM $table_programs WHERE school_id = %d ORDER BY name ASC",
+            "SELECT id, name FROM $table_programs WHERE school_id = %d ORDER BY name ASC",
             $school->id
         )
     );
@@ -271,7 +271,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                             <input class="mtech-shortcode-input-margin-top" type="text" name="name" value="" required>
                         </label>
                     </p>
-                    <p>
+                    <!-- <p>
                         <label>
                             Program Slug<span class="mtech-optional">(letters, numbers, hyphens only)</span><br>
                             <input class="mtech-shortcode-input-margin-top" type="text" name="slug" value="" required>
@@ -282,7 +282,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                             Coursedog Program ID <span class="mtech-optional">(optional)</span><br>
                             <input class="mtech-shortcode-input-margin-top" type="text" name="shortcodes_program_id" value="">
                         </label>
-                    </p>
+                    </p> -->
                     <p>
                         <button type="submit" class="button button-primary">Add Program</button>
                     </p>
