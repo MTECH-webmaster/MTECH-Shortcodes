@@ -14,8 +14,10 @@
     - tab-schedules.php (dashboard shortcodes frontend. Needs to be updated for saving new 4 fields)
 - Update generate db table code
 
-### UI refactor and add new rows without page refresh
-- 
+### Add new rows without page refresh
+
+### Remove rows without page refresh
+- Delete checkboxes -> mark schedule items to be deleted upon saving
 
 ### Misc
 - Remove program slug from schedules tab
