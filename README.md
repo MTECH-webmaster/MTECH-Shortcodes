@@ -26,9 +26,8 @@
 - Refactor with new shortcodes db structures
 DUPLICATE PROGRAM AND DELETE TRANSIENT WILL NOT WORK UNTIL THE SLUG REFERENCES ARE REMOVED.
 
-### Misc
-- Remove program slug from schedules tab
+### Format and display
 
-### HTML table template
+### Caching
 
 
