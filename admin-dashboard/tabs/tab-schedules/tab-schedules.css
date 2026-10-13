@@ -341,7 +341,11 @@
 .mtech-bulk-edit-section {
     display: flex;
     align-items: flex-start;
-    flex-direction: column;
+    flex-direction: row;
+}
+
+.mtech-shortcode-bulk-form {
+
 }
 
 .mtech-shortcode-row {
@@ -352,8 +356,9 @@
 .mtech-shortcode-row-actions-wrapper {
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
-    row-gap: 20px;
+    flex-direction: column;
+    row-gap: 47px;
+    padding-top: 35px;
 }
 
 .mtech-shortcode-row-actions {

@@ -88,6 +88,18 @@ function mtech_shortcodes_save_schedule_handler() {
 }
 add_action('admin_post_mtech_shortcodes_save_schedule', 'mtech_shortcodes_save_schedule_handler');
 
+// Sanitize one schedule row from $_POST. Returns only the editable columns.
+function mtech_shortcodes_sanitize_schedule_row($row) {
+    $fields = array('locations', 'start_date', 'hours', 'days');
+    $clean  = array();
+
+    foreach ($fields as $field) {
+        $clean[$field] = isset($row[$field]) ? sanitize_text_field(wp_unslash($row[$field])) : '';
+    }
+
+    return $clean;
+}
+
 function mtech_shortcodes_save_schedules_bulk_handler() {
     if (!current_user_can('edit_mtech_shortcodes')) {
         wp_die('Unauthorized', 403);
@@ -101,7 +113,7 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
     }
 
     global $wpdb;
-    $table_programs   = $wpdb->prefix . 'mtech_shortcodes_programs';
+    $table_programs  = $wpdb->prefix . 'mtech_shortcodes_programs';
     $table_schedules = $wpdb->prefix . 'mtech_shortcodes_schedules';
 
     $program_exists = $wpdb->get_var(
@@ -111,78 +123,128 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
         wp_die('Invalid program', 400);
     }
 
-    $submitted = isset($_POST['schedules']) && is_array($_POST['schedules']) ? $_POST['schedules'] : array();
+    // Columns that must be non-empty on every saved row. Leave empty to allow blanks;
+    // e.g. array('locations', 'start_date') to require both.
+    $required_fields = array();
 
-    if (empty($submitted)) {
-        // Nothing submitted — treat as a no-op rather than an error
-        // mtech_shortcodes_redirect_with_flag('mtech_saved');
-    }
+    $submitted_existing = isset($_POST['schedules']) && is_array($_POST['schedules']) ? $_POST['schedules'] : array();
+    $submitted_new      = isset($_POST['new_schedules']) && is_array($_POST['new_schedules']) ? $_POST['new_schedules'] : array();
 
-    // Fetch the IDs actually belonging to this program, so a tampered POST
-    // can't update another program's shortcode rows
+    // IDs that actually belong to this program, so a tampered POST can't touch other programs' rows
     $owned_ids = $wpdb->get_col(
         $wpdb->prepare("SELECT id FROM $table_schedules WHERE program_id = %d", $program_id)
     );
     $owned_ids = array_map('absint', $owned_ids);
 
-    // Validate everything before writing anything
+    // ---------- Validate everything before writing anything ----------
+
+    // Existing rows -> updates
     $updates = array();
-    $seen_types = array();
-
-    foreach ($submitted as $row) {
-        $shortcode_id = isset($row['id']) ? absint($row['id']) : 0;
-
-        if (!$shortcode_id || !in_array($shortcode_id, $owned_ids, true)) {
-            wp_die('Invalid shortcode reference', 400);
+    foreach ($submitted_existing as $row) {
+        if (!is_array($row)) {
+            wp_die('Malformed schedule data.', 400);
         }
 
-        $locations  = isset($row['locations']) ? sanitize_text_field($row['locations']) : '';
-        $start_date = isset($row['start_date']) ? sanitize_text_field($row['start_date']) : '';
-        $hours      = isset($row['hours']) ? sanitize_text_field($row['hours']) : '';
-        $days       = isset($row['days']) ? sanitize_text_field($row['days']) : '';
+        $schedule_id = isset($row['id']) ? absint($row['id']) : 0;
+        if (!$schedule_id || !in_array($schedule_id, $owned_ids, true)) {
+            wp_die('Invalid schedule reference.', 400);
+        }
 
-        // if ($locations === '' || $start_date === '') {
-        //     wp_die('Locations and start date are required for every schedule item.', 400);
-        // }
+        $clean = mtech_shortcodes_sanitize_schedule_row($row);
 
-        // The (program_id, locations) unique key means two rows in this same
-        // submission can't both claim the same locations
-        // if (in_array($locations, $seen_types, true)) {
-        //     wp_die('Duplicate locations "' . esc_html($locations) . '" — each shortcode locations must be unique within a program.', 400);
-        // }
-        // $seen_types[] = $type;
+        foreach ($required_fields as $field) {
+            if ($clean[$field] === '') {
+                wp_die('Missing required field "' . esc_html($field) . '" on an existing schedule item.', 400);
+            }
+        }
 
-        $updates[$shortcode_id] = array(
-            'locations'                  => $locations,
-            'start_date'                 => $start_date,
-            'hours'                     => $hours,
-            'days'                      => $days,
-        );
+        $updates[$schedule_id] = $clean;
     }
 
-    $formats = array('%s', '%s', '%s', '%s');
+    // New rows -> inserts (fully blank rows are skipped, not treated as errors)
+    $inserts = array();
+    foreach ($submitted_new as $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+
+        $clean = mtech_shortcodes_sanitize_schedule_row($row);
+
+        if (implode('', $clean) === '') {
+            continue;
+        }
+
+        foreach ($required_fields as $field) {
+            if ($clean[$field] === '') {
+                wp_die('Missing required field "' . esc_html($field) . '" on a new schedule item.', 400);
+            }
+        }
+
+        $inserts[] = $clean;
+    }
+
+    // ---------- Write everything in one transaction ----------
+
+    $formats_update = array('%s', '%s', '%s', '%s');
+    $formats_insert = array('%d', '%s', '%s', '%s', '%s');
+
+    $updated_count = 0;
+    $added_count   = 0;
 
     $wpdb->query('START TRANSACTION');
 
-    foreach ($updates as $shortcode_id => $data) {
+    foreach ($updates as $schedule_id => $data) {
         $result = $wpdb->update(
             $table_schedules,
             $data,
-            array('id' => $shortcode_id),
-            $formats,
-            array('%d')
+            array('id' => $schedule_id, 'program_id' => $program_id),
+            $formats_update,
+            array('%d', '%d')
         );
 
         if ($result === false) {
             $wpdb->query('ROLLBACK');
-            wp_die('Database error while saving shortcodes.', 500);
+            wp_die('Database error while updating schedule items.', 500);
         }
+
+        // update() returns 0 when nothing changed, so this counts only rows that really changed
+        if ($result > 0) {
+            $updated_count++;
+        }
+    }
+
+    foreach ($inserts as $data) {
+        $result = $wpdb->insert(
+            $table_schedules,
+            array_merge(array('program_id' => $program_id), $data),
+            $formats_insert
+        );
+
+        if ($result === false) {
+            $wpdb->query('ROLLBACK');
+            wp_die('Database error while adding schedule items.', 500);
+        }
+
+        $added_count++;
     }
 
     $wpdb->query('COMMIT');
 
+    // ---------- Redirect ----------
+
     $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-schedules');
-    $redirect = add_query_arg('mtech_saved', '1', remove_query_arg(array('mtech_saved', 'mtech_deleted', 'mtech_program_added', 'mtech_program_removed', 'mtech_program_updated'), $redirect));
+    $redirect = remove_query_arg(
+        array('mtech_saved', 'mtech_added', 'mtech_updated', 'mtech_deleted', 'mtech_program_added', 'mtech_program_removed', 'mtech_program_updated'),
+        $redirect
+    );
+    $redirect = add_query_arg(
+        array(
+            'mtech_saved'   => '1',
+            'mtech_added'   => $added_count,
+            'mtech_updated' => $updated_count,
+        ),
+        $redirect
+    );
 
     wp_safe_redirect($redirect);
     exit;

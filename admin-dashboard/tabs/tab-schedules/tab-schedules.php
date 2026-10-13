@@ -162,8 +162,11 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                                     </div>
                                 <?php endforeach; ?>
 
+                                <div class="mtech-new-rows" data-next-index="0"></div>
+
                                 <?php if (!empty($schedule_rows)) : ?>
                                     <p class="mtech-bulk-save-row">
+                                        <button type="button" class="button mtech-add-row">Add schedule row</button>
                                         <button type="submit" class="button button-primary">Save <?php echo esc_html($program->name); ?> schedule</button>
                                     </p>
                                 <?php endif; ?>
@@ -238,7 +241,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
 
                         </li>
                     </ul>
-<!-- END MOST RECENT UPDATES -->
+        <!-- END MOST RECENT UPDATES -->
 
                 </li>
             <?php endforeach; ?>
@@ -276,3 +279,35 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
     </li>
 <?php endforeach; ?>
 </ul>
+
+<template id="mtech-new-row-template">
+    <div class="mtech-shortcode-row mtech-shortcode-row-new">
+        <p>
+            <label>
+                Locations<br>
+                <input class="mtech-shortcode-input-margin-top" type="text" name="new_schedules[__INDEX__][locations]" value="">
+            </label>
+        </p>
+        <p>
+            <label>
+                Start date<br>
+                <input class="mtech-shortcode-input-margin-top" type="text" name="new_schedules[__INDEX__][start_date]" value="">
+            </label>
+        </p>
+        <p>
+            <label>
+                Hours<br>
+                <input class="mtech-shortcode-input-margin-top" type="text" name="new_schedules[__INDEX__][hours]" value="">
+            </label>
+        </p>
+        <p>
+            <label>
+                Days<br>
+                <input class="mtech-shortcode-input-margin-top" type="text" name="new_schedules[__INDEX__][days]" value="">
+            </label>
+        </p>
+        <p>
+            <button type="button" class="button-link mtech-remove-new-row">Remove this row</button>
+        </p>
+    </div>
+</template>

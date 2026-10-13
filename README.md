@@ -15,6 +15,7 @@
 - Update generate db table code
 
 ### UI refactor and add new rows without page refresh
+- 
 
 ### Misc
 - Remove program slug from schedules tab
