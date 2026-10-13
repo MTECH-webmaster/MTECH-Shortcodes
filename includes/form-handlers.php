@@ -289,68 +289,68 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
 }
 add_action('admin_post_mtech_shortcodes_save_schedules_bulk', 'mtech_shortcodes_save_schedules_bulk_handler');
 
-function mtech_shortcodes_delete_shortcode_transient_handler() {
-    if (!current_user_can('edit_mtech_shortcodes')) {
-        wp_die('Unauthorized', 403);
-    }
+// function mtech_shortcodes_delete_shortcode_transient_handler() {
+//     if (!current_user_can('edit_mtech_shortcodes')) {
+//         wp_die('Unauthorized', 403);
+//     }
 
-    $program_slug   = isset($_POST['program_slug']) ? sanitize_text_field($_POST['program_slug']) : 0;
-    $shortcode_type = isset($_POST['shortcode_type']) ? sanitize_text_field($_POST['shortcode_type']) : 0;
+//     $program_slug   = isset($_POST['program_slug']) ? sanitize_text_field($_POST['program_slug']) : 0;
+//     $shortcode_type = isset($_POST['shortcode_type']) ? sanitize_text_field($_POST['shortcode_type']) : 0;
 
-    if (!$shortcode_type || !isset($_POST['mtech_shortcodes_delete_nonce']) ||
-        !wp_verify_nonce($_POST['mtech_shortcodes_delete_nonce'], 'mtech_shortcodes_delete_shortcode_transient_' . $program_slug . $shortcode_type)) {
-        wp_die('Invalid request', 400);
-    }
+//     if (!$shortcode_type || !isset($_POST['mtech_shortcodes_delete_nonce']) ||
+//         !wp_verify_nonce($_POST['mtech_shortcodes_delete_nonce'], 'mtech_shortcodes_delete_shortcode_transient_' . $program_slug . $shortcode_type)) {
+//         wp_die('Invalid request', 400);
+//     }
 
-    $was_deleted = mtech_shortcodes_delete_shortcode_transient($program_slug, $shortcode_type);
+//     $was_deleted = mtech_shortcodes_delete_shortcode_transient($program_slug, $shortcode_type);
 
-    if ($was_deleted === true) {
-        $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
-        $redirect = add_query_arg('mtech_shortcode_transient_deleted', '1', remove_query_arg(array('mtech_saved', 'mtech_deleted'), $redirect));
-        }
-    else {
-        $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
-        $redirect = add_query_arg('mtech_shortcode_transient_deleted', '0', remove_query_arg(array('mtech_saved', 'mtech_deleted'), $redirect));
-    }
+//     if ($was_deleted === true) {
+//         $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
+//         $redirect = add_query_arg('mtech_shortcode_transient_deleted', '1', remove_query_arg(array('mtech_saved', 'mtech_deleted'), $redirect));
+//         }
+//     else {
+//         $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
+//         $redirect = add_query_arg('mtech_shortcode_transient_deleted', '0', remove_query_arg(array('mtech_saved', 'mtech_deleted'), $redirect));
+//     }
 
-    wp_safe_redirect($redirect);
-    exit;
-}
-add_action('admin_post_mtech_shortcodes_delete_shortcode_transient', 'mtech_shortcodes_delete_shortcode_transient_handler');
+//     wp_safe_redirect($redirect);
+//     exit;
+// }
+// add_action('admin_post_mtech_shortcodes_delete_shortcode_transient', 'mtech_shortcodes_delete_shortcode_transient_handler');
 
-function mtech_shortcodes_delete_shortcode_handler() {
-    if (!current_user_can('edit_mtech_shortcodes')) {
-        wp_die('Unauthorized', 403);
-    }
+// function mtech_shortcodes_delete_shortcode_handler() {
+//     if (!current_user_can('edit_mtech_shortcodes')) {
+//         wp_die('Unauthorized', 403);
+//     }
 
-    $program_id   = isset($_POST['program_id']) ? absint($_POST['program_id']) : 0;
-    $shortcode_id = isset($_POST['shortcode_id']) ? absint($_POST['shortcode_id']) : 0;
+//     $program_id   = isset($_POST['program_id']) ? absint($_POST['program_id']) : 0;
+//     $shortcode_id = isset($_POST['shortcode_id']) ? absint($_POST['shortcode_id']) : 0;
 
-    if (!$shortcode_id || !isset($_POST['mtech_shortcodes_delete_nonce']) ||
-        !wp_verify_nonce($_POST['mtech_shortcodes_delete_nonce'], 'mtech_shortcodes_delete_shortcode_' . $shortcode_id)) {
-        wp_die('Invalid request', 400);
-    }
+//     if (!$shortcode_id || !isset($_POST['mtech_shortcodes_delete_nonce']) ||
+//         !wp_verify_nonce($_POST['mtech_shortcodes_delete_nonce'], 'mtech_shortcodes_delete_shortcode_' . $shortcode_id)) {
+//         wp_die('Invalid request', 400);
+//     }
 
-    global $wpdb;
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_schedules';
+//     global $wpdb;
+//     $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_schedules';
 
-    $result = $wpdb->delete(
-        $table_shortcodes,
-        array('id' => $shortcode_id),
-        array('%d')
-    );
+//     $result = $wpdb->delete(
+//         $table_shortcodes,
+//         array('id' => $shortcode_id),
+//         array('%d')
+//     );
 
-    if ($result === false) {
-        wp_die('Database error while deleting shortcode.', 500);
-    }
+//     if ($result === false) {
+//         wp_die('Database error while deleting shortcode.', 500);
+//     }
 
-    $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
-    $redirect = add_query_arg('mtech_deleted', '1', remove_query_arg(array('mtech_saved', 'mtech_deleted'), $redirect));
+//     $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
+//     $redirect = add_query_arg('mtech_deleted', '1', remove_query_arg(array('mtech_saved', 'mtech_deleted'), $redirect));
 
-    wp_safe_redirect($redirect);
-    exit;
-}
-add_action('admin_post_mtech_shortcodes_delete_shortcode', 'mtech_shortcodes_delete_shortcode_handler');
+//     wp_safe_redirect($redirect);
+//     exit;
+// }
+// add_action('admin_post_mtech_shortcodes_delete_shortcode', 'mtech_shortcodes_delete_shortcode_handler');
 
 function mtech_shortcodes_add_program_handler() {
     if (!current_user_can('edit_mtech_shortcodes')) {
@@ -449,17 +449,17 @@ function mtech_shortcodes_duplicate_program_handler() {
         wp_die('Program name is required', 400);
     }
 
-    $slug = isset($_POST['slug']) ? mtech_shortcodes_sanitize_program_slug($_POST['slug']) : '';
-    if ($slug === '') {
-        wp_die('A valid program slug is required', 400);
-    }
+    // $slug = isset($_POST['slug']) ? mtech_shortcodes_sanitize_program_slug($_POST['slug']) : '';
+    // if ($slug === '') {
+    //     wp_die('A valid program slug is required', 400);
+    // }
 
-    $duplicate_slug = $wpdb->get_var(
-        $wpdb->prepare("SELECT id FROM $table_programs WHERE slug = %s", $slug)
-    );
-    if ($duplicate_slug) {
-        wp_die('This slug is already in use by another program.', 400);
-    }
+    // $duplicate_slug = $wpdb->get_var(
+    //     $wpdb->prepare("SELECT id FROM $table_programs WHERE slug = %s", $slug)
+    // );
+    // if ($duplicate_slug) {
+    //     wp_die('This slug is already in use by another program.', 400);
+    // }
 
     $shortcodes_program_id = isset($_POST['shortcodes_program_id']) ? sanitize_text_field($_POST['shortcodes_program_id']) : '';
 
@@ -477,7 +477,7 @@ function mtech_shortcodes_duplicate_program_handler() {
     $data = array(
         'school_id' => $school_id,
         'name'      => $name,
-        'slug'      => $slug,
+        // 'slug'      => $slug,
         'shortcodes_program_id' => $shortcodes_program_id !== '' ? $shortcodes_program_id : null,
     );
     $formats = array('%d', '%s', '%s', $shortcodes_program_id !== '' ? '%s' : null);
@@ -582,78 +582,78 @@ function mtech_shortcodes_remove_program_handler() {
 }
 add_action('admin_post_mtech_shortcodes_remove_program', 'mtech_shortcodes_remove_program_handler');
 
-function mtech_shortcodes_sanitize_program_slug($raw_slug) {
-    // sanitize_title() is WordPress's built-in slug normalizer — same logic
-    // used for post/page slugs. Turns "Automation Technology!" into "automation-technology".
-    return sanitize_title($raw_slug);
-}
+// function mtech_shortcodes_sanitize_program_slug($raw_slug) {
+//     // sanitize_title() is WordPress's built-in slug normalizer — same logic
+//     // used for post/page slugs. Turns "Automation Technology!" into "automation-technology".
+//     return sanitize_title($raw_slug);
+// }
 
-function mtech_shortcodes_edit_program_handler() {
-    if (!current_user_can('edit_mtech_shortcodes')) {
-        wp_die('Unauthorized', 403);
-    }
+// function mtech_shortcodes_edit_program_handler() {
+//     if (!current_user_can('edit_mtech_shortcodes')) {
+//         wp_die('Unauthorized', 403);
+//     }
 
-    $program_id = isset($_POST['program_id']) ? absint($_POST['program_id']) : 0;
+//     $program_id = isset($_POST['program_id']) ? absint($_POST['program_id']) : 0;
 
-    if (!$program_id || !isset($_POST['mtech_shortcodes_edit_program_nonce']) ||
-        !wp_verify_nonce($_POST['mtech_shortcodes_edit_program_nonce'], 'mtech_shortcodes_edit_program_' . $program_id)) {
-        wp_die('Invalid request', 400);
-    }
+//     if (!$program_id || !isset($_POST['mtech_shortcodes_edit_program_nonce']) ||
+//         !wp_verify_nonce($_POST['mtech_shortcodes_edit_program_nonce'], 'mtech_shortcodes_edit_program_' . $program_id)) {
+//         wp_die('Invalid request', 400);
+//     }
 
-    global $wpdb;
-    $table_programs = $wpdb->prefix . 'mtech_shortcodes_programs';
+//     global $wpdb;
+//     $table_programs = $wpdb->prefix . 'mtech_shortcodes_programs';
 
-    $program_exists = $wpdb->get_var(
-        $wpdb->prepare("SELECT id FROM $table_programs WHERE id = %d", $program_id)
-    );
-    if (!$program_exists) {
-        wp_die('Invalid program', 400);
-    }
+//     $program_exists = $wpdb->get_var(
+//         $wpdb->prepare("SELECT id FROM $table_programs WHERE id = %d", $program_id)
+//     );
+//     if (!$program_exists) {
+//         wp_die('Invalid program', 400);
+//     }
 
-    $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
-    if ($name === '') {
-        wp_die('Program name is required', 400);
-    }
+//     $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
+//     if ($name === '') {
+//         wp_die('Program name is required', 400);
+//     }
 
-    $slug = isset($_POST['slug']) ? mtech_shortcodes_sanitize_program_slug($_POST['slug']) : '';
-    if ($slug === '') {
-        wp_die('A valid program slug is required', 400);
-    }
+//     $slug = isset($_POST['slug']) ? mtech_shortcodes_sanitize_program_slug($_POST['slug']) : '';
+//     if ($slug === '') {
+//         wp_die('A valid program slug is required', 400);
+//     }
 
-    // Confirm the slug isn't already used by a *different* program
-    $duplicate = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT id FROM $table_programs WHERE slug = %s AND id != %d",
-            $slug,
-            $program_id
-        )
-    );
-    if ($duplicate) {
-        wp_die('This slug is already in use by another program.', 400);
-    }
+//     // Confirm the slug isn't already used by a *different* program
+//     $duplicate = $wpdb->get_var(
+//         $wpdb->prepare(
+//             "SELECT id FROM $table_programs WHERE slug = %s AND id != %d",
+//             $slug,
+//             $program_id
+//         )
+//     );
+//     if ($duplicate) {
+//         wp_die('This slug is already in use by another program.', 400);
+//     }
 
-    $shortcodes_program_id = isset($_POST['shortcodes_program_id']) ? sanitize_text_field($_POST['shortcodes_program_id']) : '';
+//     $shortcodes_program_id = isset($_POST['shortcodes_program_id']) ? sanitize_text_field($_POST['shortcodes_program_id']) : '';
 
-    $data = array(
-        'name'                 => $name,
-        'slug'                 => $slug,
-        'shortcodes_program_id' => $shortcodes_program_id !== '' ? $shortcodes_program_id : null,
-    );
-    $formats = array('%s', '%s', $shortcodes_program_id !== '' ? '%s' : null);
+//     $data = array(
+//         'name'                 => $name,
+//         'slug'                 => $slug,
+//         'shortcodes_program_id' => $shortcodes_program_id !== '' ? $shortcodes_program_id : null,
+//     );
+//     $formats = array('%s', '%s', $shortcodes_program_id !== '' ? '%s' : null);
 
-    $result = $wpdb->update($table_programs, $data, array('id' => $program_id), $formats, array('%d'));
+//     $result = $wpdb->update($table_programs, $data, array('id' => $program_id), $formats, array('%d'));
 
-    if ($result === false) {
-        wp_die('Database error while updating program.', 500);
-    }
+//     if ($result === false) {
+//         wp_die('Database error while updating program.', 500);
+//     }
 
-    $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
-    $redirect = add_query_arg(
-        'mtech_program_updated', '1',
-        remove_query_arg(array('mtech_saved', 'mtech_deleted', 'mtech_program_added', 'mtech_program_removed', 'mtech_program_updated'), $redirect)
-    );
+//     $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
+//     $redirect = add_query_arg(
+//         'mtech_program_updated', '1',
+//         remove_query_arg(array('mtech_saved', 'mtech_deleted', 'mtech_program_added', 'mtech_program_removed', 'mtech_program_updated'), $redirect)
+//     );
 
-    wp_safe_redirect($redirect);
-    exit;
-}
-add_action('admin_post_mtech_shortcodes_edit_program', 'mtech_shortcodes_edit_program_handler');
+//     wp_safe_redirect($redirect);
+//     exit;
+// }
+// add_action('admin_post_mtech_shortcodes_edit_program', 'mtech_shortcodes_edit_program_handler');
