@@ -19,6 +19,9 @@
 ### Remove rows without page refresh
 - Delete checkboxes -> mark schedule items to be deleted upon saving
 
+### Duplicate program handler
+- Refactor with new shortcodes db structure (CURRENT)
+
 ### Misc
 - Remove program slug from schedules tab
 
