@@ -123,14 +123,14 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
         wp_die('Invalid program', 400);
     }
 
-    // Columns that must be non-empty on every saved row. Leave empty to allow blanks;
-    // e.g. array('locations', 'start_date') to require both.
+    // Columns that must be non-empty on every saved row (e.g. array('locations', 'start_date')).
     $required_fields = array();
 
     $submitted_existing = isset($_POST['schedules']) && is_array($_POST['schedules']) ? $_POST['schedules'] : array();
     $submitted_new      = isset($_POST['new_schedules']) && is_array($_POST['new_schedules']) ? $_POST['new_schedules'] : array();
+    $submitted_delete   = isset($_POST['delete_schedules']) && is_array($_POST['delete_schedules']) ? $_POST['delete_schedules'] : array();
 
-    // IDs that actually belong to this program, so a tampered POST can't touch other programs' rows
+    // IDs that actually belong to this program
     $owned_ids = $wpdb->get_col(
         $wpdb->prepare("SELECT id FROM $table_schedules WHERE program_id = %d", $program_id)
     );
@@ -138,7 +138,16 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
 
     // ---------- Validate everything before writing anything ----------
 
-    // Existing rows -> updates
+    // Deletes: keep only IDs this program owns. An ID that isn't owned is either
+    // already deleted (e.g. by another user) or tampered with. Deleting it would be
+    // a no-op either way, so we ignore it rather than fail the whole save.
+    $delete_ids = array_values(array_unique(array_intersect(
+        array_map('absint', $submitted_delete),
+        $owned_ids
+    )));
+    $delete_lookup = array_flip($delete_ids); // for fast isset() checks
+
+    // Existing rows -> updates (rows marked for deletion are skipped: delete wins)
     $updates = array();
     foreach ($submitted_existing as $row) {
         if (!is_array($row)) {
@@ -148,6 +157,10 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
         $schedule_id = isset($row['id']) ? absint($row['id']) : 0;
         if (!$schedule_id || !in_array($schedule_id, $owned_ids, true)) {
             wp_die('Invalid schedule reference.', 400);
+        }
+
+        if (isset($delete_lookup[$schedule_id])) {
+            continue;
         }
 
         $clean = mtech_shortcodes_sanitize_schedule_row($row);
@@ -161,7 +174,7 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
         $updates[$schedule_id] = $clean;
     }
 
-    // New rows -> inserts (fully blank rows are skipped, not treated as errors)
+    // New rows -> inserts (fully blank rows are skipped)
     $inserts = array();
     foreach ($submitted_new as $row) {
         if (!is_array($row)) {
@@ -183,15 +196,32 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
         $inserts[] = $clean;
     }
 
-    // ---------- Write everything in one transaction ----------
+    // ---------- Write everything in one transaction: deletes, updates, inserts ----------
 
     $formats_update = array('%s', '%s', '%s', '%s');
     $formats_insert = array('%d', '%s', '%s', '%s', '%s');
 
+    $removed_count = 0;
     $updated_count = 0;
     $added_count   = 0;
 
     $wpdb->query('START TRANSACTION');
+
+    // Deletes first, so a unique key can be freed up before an insert reuses it
+    foreach ($delete_ids as $schedule_id) {
+        $result = $wpdb->delete(
+            $table_schedules,
+            array('id' => $schedule_id, 'program_id' => $program_id),
+            array('%d', '%d')
+        );
+
+        if ($result === false) {
+            $wpdb->query('ROLLBACK');
+            wp_die('Database error while deleting schedule items.', 500);
+        }
+
+        $removed_count += (int) $result;
+    }
 
     foreach ($updates as $schedule_id => $data) {
         $result = $wpdb->update(
@@ -234,7 +264,7 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
 
     $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-schedules');
     $redirect = remove_query_arg(
-        array('mtech_saved', 'mtech_added', 'mtech_updated', 'mtech_deleted', 'mtech_program_added', 'mtech_program_removed', 'mtech_program_updated'),
+        array('mtech_saved', 'mtech_added', 'mtech_updated', 'mtech_removed', 'mtech_deleted', 'mtech_program_added', 'mtech_program_removed', 'mtech_program_updated'),
         $redirect
     );
     $redirect = add_query_arg(
@@ -242,6 +272,7 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
             'mtech_saved'   => '1',
             'mtech_added'   => $added_count,
             'mtech_updated' => $updated_count,
+            'mtech_removed' => $removed_count,
         ),
         $redirect
     );
