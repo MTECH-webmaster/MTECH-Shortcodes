@@ -20,9 +20,9 @@
 - Delete checkboxes -> mark schedule items to be deleted upon saving
 
 ### Add program handler
-- Refactor to add program to DB with only name (CURRENT)
+- Refactor to add program to DB with only name
 
-### Duplicate program handler
+### Duplicate program handler (CURRENT)
 - Refactor with new shortcodes db structures
 DUPLICATE PROGRAM AND DELETE TRANSIENT WILL NOT WORK UNTIL THE SLUG REFERENCES ARE REMOVED.
 
