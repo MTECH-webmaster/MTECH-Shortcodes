@@ -21,6 +21,12 @@ function mtech_shortcodes_shortcode_handler($atts) {
         return '';
     }
 
+    // Check cache
+    // Retrieve all schedule rows that below to the program ID passed as an argument
+    // Format as a table
+    // Cache
+    // return
+
     return 'test';
 
     // $token = mtech_shortcodes_get_api_token_from_db();
