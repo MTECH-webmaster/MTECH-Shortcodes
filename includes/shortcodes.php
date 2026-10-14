@@ -7,27 +7,54 @@ if (!defined('ABSPATH')) {
 function mtech_shortcodes_shortcode_handler($atts) {
     $atts = shortcode_atts(
         array(
-            'program_slug' => '',
-            'type'    => '',
+            'program_id' => '',
         ),
         $atts,
         'mtech-shortcodes'
     );
 
-    $program_slug = sanitize_text_field($atts['program_slug']);
-    $type    = sanitize_text_field($atts['type']);
+    $program_id = sanitize_text_field($atts['program_id']);
 
-    if (empty($program_slug) || empty($type)) {
+    if (empty($program_id)) {
         return '';
     }
 
     // Check cache
-    // Retrieve all schedule rows that below to the program ID passed as an argument
-    // Format as a table
-    // Cache
-    // return
+    // $schedule = get_transient(/* code goes here */);
+    // if ($schedule) {
+    //     return $schedule;
+    // }
 
-    return 'test';
+    global $wpdb;
+    $table_programs = $wpdb->prefix . 'mtech_shortcodes_programs';
+    $table_schedules = $wpdb->prefix . 'mtech_shortcodes_schedules';
+
+    $program_exists = $wpdb->get_var(
+        $wpdb->prepare("SELECT id FROM $table_programs WHERE id = %d", $program_id)
+    );
+    if (!$program_exists) {
+        return '';
+    }
+
+    // Retrieve all schedule rows that belong to the program ID passed as an argument
+    $schedule_rows = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT id, locations, start_date, hours, days
+                FROM $table_schedules
+                WHERE program_id = %d
+                ORDER BY id ASC",
+            $program_id
+        )
+    );
+
+    if (empty($schedule_rows)) {
+        return '';
+    }
+
+    // Format as a table
+    $formatted = mtech_shortcodes_format_program_data($schedule_rows, 'schedule');
+
+    return $formatted;
 
     // $token = mtech_shortcodes_get_api_token_from_db();
     // if (is_wp_error($token)) {
