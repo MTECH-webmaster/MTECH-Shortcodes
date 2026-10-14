@@ -97,37 +97,37 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                                         <input class="mtech-shortcode-input-margin-top" type="text" name="name" value="" required>
                                     </label>
                                 </p>
-                                <p>
+                                <!-- <p>
                                     <label>
                                         Program Slug<span class="mtech-optional">(letters, numbers, hyphens only)</span><br>
                                         <input class="mtech-shortcode-input-margin-top" type="text" name="slug" value="" required>
                                     </label>
-                                </p>
-                                <p>
+                                </p> -->
+                                <!-- <p>
                                     <label>
                                         Coursedog Program ID <span class="mtech-optional">(optional)</span><br>
                                         <input class="mtech-shortcode-input-margin-top" type="text" name="shortcodes_program_id" value="">
                                     </label>
-                                </p>
-                                <p>
+                                </p> -->
+                                <!-- <p>
                                     <label>
                                         Search <span class="mtech-optional">(optional)</span><br>
                                         <input class="mtech-shortcode-input-margin-top" type="checkbox" name="search" value="1">
                                     </label>
-                                </p>
-                                <p>
+                                </p> -->
+                                <!-- <p>
                                     <label>
                                         Search Query <span class="mtech-optional">(use spaces, not %20)</span><br>
                                         <input class="mtech-shortcode-input-margin-top" type="text" name="search_query" value="">
                                     </label>
-                                </p>
+                                </p> -->
 
-                                <p>
+                                <!-- <p>
                                     <label>
                                         Effective Dates Range<br>
                                         <input class="mtech-shortcode-input-margin-top" type="text" name="effective_dates_range" value="">
                                     </label>
-                                </p>
+                                </p> -->
 
                                 <button type="submit" class="button-link mtech-remove-program-link">Duplicate</button>
                             </form>

@@ -461,12 +461,12 @@ function mtech_shortcodes_duplicate_program_handler() {
     //     wp_die('This slug is already in use by another program.', 400);
     // }
 
-    $shortcodes_program_id = isset($_POST['shortcodes_program_id']) ? sanitize_text_field($_POST['shortcodes_program_id']) : '';
+    // $shortcodes_program_id = isset($_POST['shortcodes_program_id']) ? sanitize_text_field($_POST['shortcodes_program_id']) : '';
 
     // search, search_query, and effective_dates_range for new program's shortcodes
-    $search = !empty($_POST['search']) ? 1 : 0;
-    $search_query = isset($_POST['search_query']) ? sanitize_text_field($_POST['search_query']) : '';
-    $effective_dates_range = isset($_POST['effective_dates_range']) ? sanitize_text_field($_POST['effective_dates_range']) : '';
+    // $search = !empty($_POST['search']) ? 1 : 0;
+    // $search_query = isset($_POST['search_query']) ? sanitize_text_field($_POST['search_query']) : '';
+    // $effective_dates_range = isset($_POST['effective_dates_range']) ? sanitize_text_field($_POST['effective_dates_range']) : '';
 
 
     /////////////////////////////
@@ -477,10 +477,8 @@ function mtech_shortcodes_duplicate_program_handler() {
     $data = array(
         'school_id' => $school_id,
         'name'      => $name,
-        // 'slug'      => $slug,
-        'shortcodes_program_id' => $shortcodes_program_id !== '' ? $shortcodes_program_id : null,
     );
-    $formats = array('%d', '%s', '%s', $shortcodes_program_id !== '' ? '%s' : null);
+    $formats = array('%d', '%s');
 
     $result = $wpdb->insert($table_programs, $data, $formats);
 
@@ -499,30 +497,29 @@ function mtech_shortcodes_duplicate_program_handler() {
     //  START DUPLICATE SHORTCODES  //
     //////////////////////////////////
 
-    $table_shortcodes = $wpdb->prefix . 'mtech_shortcodes_schedules';
+    $table_schedules = $wpdb->prefix . 'mtech_shortcodes_schedules';
 
-    $shortcode_rows = $wpdb->get_results(
+    $schedule_rows = $wpdb->get_results(
         $wpdb->prepare(
-            "SELECT id, type, field, search, search_query, effective_dates_range
-                FROM $table_shortcodes
+            "SELECT id, locations, start_date, hours, days
+                FROM $table_schedules
                 WHERE program_id = %d
-                ORDER BY type ASC",
+                ORDER BY id ASC",
             $program_id
         )
     );
 
-    foreach($shortcode_rows as $row) {
+    foreach($schedule_rows as $row) {
         $data = array(
             'program_id' => $new_program_id,
-            'type' => $row->type,
-            'field' => $row->field,
-            'search' => $search,
-            'search_query' => $search_query,
-            'effective_dates_range' => $effective_dates_range,
+            'locations' => $row->locations,
+            'start_date' => $row->start_date,
+            'hours' => $row->hours,
+            'days' => $row->days,
         );
-        $formats = array('%d', '%s', '%s', '%d', '%s', '%s');
+        $formats = array('%d', '%s', '%s', '%s', '%s');
 
-        $result = $wpdb->insert($table_shortcodes, $data, $formats);
+        $result = $wpdb->insert($table_schedules, $data, $formats);
 
         if ($result === false) {
             wp_die('Database error while duplicating shortcodes.', 500);
