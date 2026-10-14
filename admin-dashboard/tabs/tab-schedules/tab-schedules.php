@@ -69,7 +69,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                 <li>
                     <div class="mtech-program-row">
                         <span class="mtech-caret" data-type="program"><?php echo esc_html($program->name); ?></span>
-                        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-program-form-delete" onsubmit="return confirm('Remove this program? All of its shortcodes will also be deleted. This cannot be undone.');">
+                        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-program-form-delete" onsubmit="return confirm('Remove this program? All of its schedule rows will be deleted. This cannot be undone.');">
                             <input type="hidden" name="action" value="mtech_shortcodes_remove_program">
                             <input type="hidden" name="program_id" value="<?php echo esc_attr($program->id); ?>">
                             <?php wp_nonce_field('mtech_shortcodes_remove_program_' . $program->id, 'mtech_shortcodes_remove_program_nonce'); ?>
@@ -151,12 +151,12 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
 
                                 <div class="mtech-new-rows" data-next-index="0"></div>
 
-                                <?php if (!empty($schedule_rows)) : ?>
+                                <?php /* if (!empty($schedule_rows)) : */ ?>
                                     <p class="mtech-bulk-save-row">
                                         <button type="button" class="button mtech-add-row">Add schedule row</button>
                                         <button type="submit" class="button button-primary">Save <?php echo esc_html($program->name); ?> schedule</button>
                                     </p>
-                                <?php endif; ?>
+                                <?php /* endif; */ ?>
                             </form>
 
                             <!-- Per-row delete / delete-transient actions, outside the bulk form -->
@@ -180,46 +180,6 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                                     </div>
                                 <?php endforeach; ?>
                             </div>
-
-
-                        <!-- Add new shortcode for this program -->
-                            <li class="li-new-shortcode-section">
-                                <p><strong>Add new schedule item</strong></p>
-                                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-shortcode-form mtech-shortcode-form-new">
-                                    <input type="hidden" name="action" value="mtech_shortcodes_save_schedule">
-                                    <input type="hidden" name="program_id" value="<?php echo esc_attr($program->id); ?>">
-                                    <input type="hidden" name="shortcode_id" value="">
-                                    <?php wp_nonce_field('mtech_shortcodes_save_schedule_' . $program->id, 'mtech_schedule_nonce'); ?>
-                                    <p>
-                                        <label>
-                                            Locations<br>
-                                            <input class="mtech-shortcode-input-margin-top" type="text" name="locations" value="">
-                                        </label>
-                                    </p>
-                                    <p>
-                                        <label>
-                                            Start date<br>
-                                            <input class="mtech-shortcode-input-margin-top" type="text" name="start_date" value="">
-                                        </label>
-                                    </p>
-                                    <p>
-                                        <label>
-                                            Hours<br>
-                                            <input class="mtech-shortcode-input-margin-top" type="text" name="hours" value="">
-                                        </label>
-                                    </p>
-                                    <p>
-                                        <label>
-                                            Days<br>
-                                            <input class="mtech-shortcode-input-margin-top" type="text" name="days" value="">
-                                        </label>
-                                    </p>
-                                    <p>
-                                        <button type="submit" class="button button-primary">Add Schedule item</button>
-                                    </p>
-                                </form>
-                            </li>
-
 
                         </li>
                     </ul>
