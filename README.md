@@ -28,9 +28,9 @@
 ### Dashboard UI refactor
 - Make row creation more intuitive
 
-### Shortcode format and display (CURRENT)
+### Shortcode format and display
 
-### Caching
+### Caching (CURRENT)
 - Set transient
 - Delete transient handler
 
