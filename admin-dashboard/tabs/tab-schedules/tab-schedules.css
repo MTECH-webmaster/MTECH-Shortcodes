@@ -342,6 +342,7 @@
     display: flex;
     align-items: flex-start;
     flex-direction: row;
+    margin-bottom: -2px;
 }
 
 .mtech-shortcode-bulk-form {
@@ -398,3 +399,9 @@
     color: #b32d2e;
 }
 /* END marking items to be deleted */
+
+
+.mtech-bulk-save-row {
+    display: flex;
+    column-gap: 10px;
+}
