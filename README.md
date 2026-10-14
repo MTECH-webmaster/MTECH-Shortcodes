@@ -22,12 +22,15 @@
 ### Add program handler
 - Refactor to add program to DB with only name
 
-### Duplicate program handler (CURRENT)
+### Duplicate program handler
 - Refactor with new shortcodes db structures
-DUPLICATE PROGRAM AND DELETE TRANSIENT WILL NOT WORK UNTIL THE SLUG REFERENCES ARE REMOVED.
 
-### Format and display
+### Dashboard UI refactor
+- Make row creation more intuitive
+
+### Shortcode format and display (CURRENT)
 
 ### Caching
-
+- Set transient
+- Delete transient handler
 
