@@ -140,7 +140,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                                                 <input class="mtech-shortcode-input-margin-top" type="text" name="schedules[<?php echo esc_attr($schedule_item->id); ?>][days]" value="<?php echo esc_attr($schedule_item->days); ?>">
                                             </label>
                                         </p>
-                                        <p>
+                                        <p class="mtech-row-delete-wrapper">
                                             <label class="mtech-row-delete">
                                                 <input type="checkbox" name="delete_schedules[]" value="<?php echo esc_attr($schedule_item->id); ?>">
                                                 Delete this row
@@ -216,7 +216,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                 <input class="mtech-shortcode-input-margin-top" type="text" name="new_schedules[__INDEX__][days]" value="">
             </label>
         </p>
-        <p>
+        <p class="mtech-new-row-remove-wrapper">
             <button type="button" class="button-link mtech-remove-new-row">Remove this row</button>
         </p>
     </div>
