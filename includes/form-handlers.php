@@ -268,6 +268,9 @@ function mtech_shortcodes_save_schedules_bulk_handler() {
 
     $wpdb->query('COMMIT');
 
+    // Clear schedule cache for this program
+    mtech_shortcodes_delete_schedule_transient($program_id);
+
     // REDIRECT
     $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-schedules');
     $redirect = remove_query_arg(
@@ -558,3 +561,28 @@ function mtech_shortcodes_remove_program_handler() {
     exit;
 }
 add_action('admin_post_mtech_shortcodes_remove_program', 'mtech_shortcodes_remove_program_handler');
+
+function mtech_shortcodes_clear_program_cache_handler() {
+    if (!current_user_can('edit_mtech_shortcodes')) {
+        wp_die('Unauthorized', 403);
+    }
+
+    $program_id = isset($_POST['program_id']) ? absint($_POST['program_id']) : 0;
+
+    if (!$program_id || !isset($_POST['mtech_clear_cache_nonce']) ||
+        !wp_verify_nonce($_POST['mtech_clear_cache_nonce'], 'mtech_shortcodes_clear_program_cache_' . $program_id)) {
+        wp_die('Invalid request', 400);
+    }
+
+    $was_deleted = mtech_shortcodes_delete_schedule_transient($program_id);
+
+    $redirect = wp_get_referer() ? wp_get_referer() : admin_url('options-general.php?page=mtech-shortcodes');
+    $redirect = add_query_arg(
+        'mtech_cache_cleared', $was_deleted ? '1' : '0',
+        remove_query_arg(array('mtech_saved', 'mtech_cache_cleared'), $redirect)
+    );
+
+    wp_safe_redirect($redirect);
+    exit;
+}
+add_action('admin_post_mtech_shortcodes_clear_program_cache', 'mtech_shortcodes_clear_program_cache_handler');

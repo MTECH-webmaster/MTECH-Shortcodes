@@ -20,10 +20,10 @@ function mtech_shortcodes_shortcode_handler($atts) {
     }
 
     // Check cache
-    // $schedule = get_transient(/* code goes here */);
-    // if ($schedule) {
-    //     return $schedule;
-    // }
+    $schedule = mtech_shortcodes_get_schedule_transient($program_id);
+    if ($schedule) {
+        return $schedule;
+    }
 
     global $wpdb;
     $table_programs = $wpdb->prefix . 'mtech_shortcodes_programs';
@@ -53,6 +53,7 @@ function mtech_shortcodes_shortcode_handler($atts) {
 
     // Format as a table
     $formatted = mtech_shortcodes_format_program_data($schedule_rows, 'schedule');
+    mtech_shortcodes_set_schedule_transient($program_id, $formatted);
 
     return $formatted;
 
