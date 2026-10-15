@@ -398,6 +398,18 @@
 .mtech-row-delete {
     color: #b32d2e;
 }
+
+.mtech-row-delete-wrapper {
+    display: flex;
+    align-items: flex-end;
+}
+
+/* remove new row */
+.mtech-new-row-remove-wrapper {
+    display: flex;
+    align-items: flex-end;
+}
+
 /* END marking items to be deleted */
 
 

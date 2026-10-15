@@ -140,7 +140,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                                                 <input class="mtech-shortcode-input-margin-top" type="text" name="schedules[<?php echo esc_attr($schedule_item->id); ?>][days]" value="<?php echo esc_attr($schedule_item->days); ?>">
                                             </label>
                                         </p>
-                                        <p>
+                                        <p class="mtech-row-delete-wrapper">
                                             <label class="mtech-row-delete">
                                                 <input type="checkbox" name="delete_schedules[]" value="<?php echo esc_attr($schedule_item->id); ?>">
                                                 Delete this row
@@ -158,28 +158,6 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                                     </p>
                                 <?php /* endif; */ ?>
                             </form>
-
-                            <!-- Per-row delete / delete-transient actions, outside the bulk form -->
-                            <div class="mtech-shortcode-row-actions-wrapper">
-                                <?php foreach ($schedule_rows as $schedule_item) : ?>
-                                    <div class="mtech-shortcode-row-actions">
-                                        <span class="mtech-row-actions-label"><?php echo esc_html($schedule_item->type); ?></span>
-
-                                        <div class="mtech-shortcode-row-actions-forms">
-                                            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="mtech-shortcode-form-delete">
-                                                <input type="hidden" name="action" value="mtech_shortcodes_delete_shortcode_transient">
-                                                <input type="hidden" name="program_slug" value="<?php echo esc_attr($program->slug); ?>">
-                                                <input type="hidden" name="shortcode_type" value="<?php echo esc_attr($schedule_item->type); ?>">
-                                                <?php wp_nonce_field('mtech_shortcodes_delete_shortcode_transient_' . $program->slug . $schedule_item->type, 'mtech_shortcodes_delete_nonce'); ?>
-                                                <button type="submit" class="button button-secondary mtech-shortcode-input-margin-top">Delete Transient</button>
-                                            </form>
-
-                                            <!-- Schedule row delete button was removed from here -->
-
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
 
                         </li>
                     </ul>
@@ -238,7 +216,7 @@ $schools = $wpdb->get_results("SELECT id, name FROM $table_schools ORDER BY name
                 <input class="mtech-shortcode-input-margin-top" type="text" name="new_schedules[__INDEX__][days]" value="">
             </label>
         </p>
-        <p>
+        <p class="mtech-new-row-remove-wrapper">
             <button type="button" class="button-link mtech-remove-new-row">Remove this row</button>
         </p>
     </div>
