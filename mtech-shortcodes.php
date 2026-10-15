@@ -33,29 +33,20 @@ class MTECH_Shortcodes {
     }
 
     public function __construct() {
-        // Initialize the plugin
         add_action('plugins_loaded', array($this, 'init'));
     }
 
     public static function activate_plugin() {
         mtech_shortcodes_create_tables(); // from database.php
         mtech_shortcodes_add_custom_editor_role(); // from role.php
-
-        // if (!wp_next_scheduled('mtech_shortcodes_cron_generate_api_token')) {
-        //     wp_schedule_event(time(), 'twicedaily', 'mtech_shortcodes_cron_generate_api_token');
-        // }
     }
 
     public static function deactivate_plugin() {
         mtech_shortcodes_remove_custom_editor_role(); // from role.php
-
-        // wp_clear_scheduled_hook('mtech_shortcodes_cron_generate_api_token');
     }
 
     public function init() {
         add_action('admin_menu', array($this, 'add_admin_menu'));
-
-        // add_action('mtech_shortcodes_cron_generate_api_token', 'mtech_shortcodes_run_scheduled_token_generation');
     }
 
     public function add_admin_menu() {
